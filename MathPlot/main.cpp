@@ -9,7 +9,7 @@
 int main()
 {
     Program program(getProgram());
-    Renderer renderer;
+    Renderer renderer(program.screenWidth, program.screenHeight);
 
     while (!program.shouldClose())
     {
