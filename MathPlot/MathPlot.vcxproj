@@ -147,7 +147,10 @@
     <ClCompile Include="Divide.cpp" />
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="ExpressionParser.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Program.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Subtract.cpp" />
     <ClCompile Include="Multiply.cpp" />
     <ClCompile Include="Operator.cpp" />
@@ -161,6 +164,10 @@
     <ClInclude Include="Divide.h" />
     <ClInclude Include="Expression.h" />
     <ClInclude Include="ExpressionParser.h" />
+    <ClInclude Include="Program.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Subtract.h" />
     <ClInclude Include="Multiply.h" />
     <ClInclude Include="Operator.h" />
@@ -168,6 +175,10 @@
     <ClInclude Include="Value.h" />
     <ClInclude Include="X.h" />
     <ClInclude Include="Y.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\shader.frag" />
+    <None Include="shaders\shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

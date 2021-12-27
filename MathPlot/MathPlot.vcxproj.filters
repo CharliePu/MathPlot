@@ -33,7 +33,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Expression.cpp">
@@ -51,9 +51,6 @@
     <ClCompile Include="Multiply.cpp">
       <Filter>Source Files\Expressions\Operators</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Constant.cpp">
       <Filter>Source Files\Expressions\Values</Filter>
     </ClCompile>
@@ -68,6 +65,18 @@
     </ClCompile>
     <ClCompile Include="Operator.cpp">
       <Filter>Source Files\Expressions\Operators</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionParser.cpp">
+      <Filter>Source Files\Expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Program.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,9 +98,6 @@
     <ClInclude Include="Plus.h">
       <Filter>Header Files\Expressions\Operators</Filter>
     </ClInclude>
-    <ClInclude Include="ExpressionParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Value.h">
       <Filter>Header Files\Expressions\Values</Filter>
     </ClInclude>
@@ -104,5 +110,24 @@
     <ClInclude Include="Constant.h">
       <Filter>Header Files\Expressions\Values</Filter>
     </ClInclude>
+    <ClInclude Include="ExpressionParser.h">
+      <Filter>Header Files\Expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Program.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\shader.frag" />
+    <None Include="shaders\shader.vert" />
   </ItemGroup>
 </Project>
