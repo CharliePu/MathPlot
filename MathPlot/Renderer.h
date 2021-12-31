@@ -11,9 +11,10 @@ public:
 
 
 	void draw();
-	void updateData(const std::vector<std::vector<int>> &data);
+	void updateData(const std::vector<std::vector<double>>& data);
 private:
 	Shader shader;
 	unsigned int vao, vbo, fbo;
+	unsigned int textureId;
 };
 

@@ -23,21 +23,12 @@ Renderer::Renderer(int width, int height): shader(vertexShaderPath, fragmentShad
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), (void*)(2 * sizeof(double)));
 
-    //unsigned int framebuffer;
-    //glGenFramebuffers(1, &framebuffer);
-    //glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-    //unsigned int textureColorbuffer;
-    //glGenTextures(1, &textureColorbuffer);
-    //glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width ,height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-    //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    //    std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 }
 
 void Renderer::draw()
@@ -46,11 +37,36 @@ void Renderer::draw()
 	glClear(GL_COLOR_BUFFER_BIT);
 
     shader.use();
+    glBindTexture(GL_TEXTURE_2D, textureId);
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Renderer::updateData(const std::vector<std::vector<int>>& data)
+void Renderer::updateData(const std::vector<std::vector<double>>& data)
 {
-	
+    if (data.size() == 0 || data.front().size() == 0)
+    {
+        return;
+    }
+
+    std::vector<unsigned char> flattenedData;
+    flattenedData.reserve(data.size() * data.front().size());
+    for (int i = 0; i < data.size(); i++)
+    {
+        for (int j = 0; j < data.front().size(); j++)
+        {
+            flattenedData.push_back(static_cast<unsigned char>(data[i][j] * 255));
+        }
+
+        // 4-byte alignment
+        while (flattenedData.size() % 4 != 0)
+        {
+            flattenedData.push_back(0);
+        }
+    }
+
+    //std::vector<unsigned char> d = { 28, 56, 84, 0, 112, 140, 168, 0, 196, 224, 252, 0 };
+
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.front().size(), data.size(), 0, GL_RED, GL_UNSIGNED_BYTE, &flattenedData[0]);
 }
