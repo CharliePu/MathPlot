@@ -32,8 +32,7 @@ std::unique_ptr<Expression> ExpressionParser::parse(const std::string& exp)
 			lastValidChar = c;
 			continue;
 		}
-
-		if (c == 'x' || c == 'y')
+		else if (c == 'x' || c == 'y')
 		{
 			if ((lastValidChar >= '0' && lastValidChar <= '9') || (lastValidChar == 'x' || lastValidChar == 'y' && lastValidChar != c))
 			{
@@ -42,9 +41,10 @@ std::unique_ptr<Expression> ExpressionParser::parse(const std::string& exp)
 
 			valueStack.push(createUnkown(c));
 			lastValidChar = c;
-		}
+			i++;
 
-		if (c == '+' || c == '-' || c == '*' || c == '/')
+		}
+		else if (c == '+' || c == '-' || c == '*' || c == '/')
 		{
 			lastValidChar = c;
 			auto op = createOperator(c);
@@ -57,8 +57,16 @@ std::unique_ptr<Expression> ExpressionParser::parse(const std::string& exp)
 				}
 			}
 			operatorStack.push(std::move(op));
+			i++;
 		}
-		i++;
+		else if (c == ' ')
+		{
+			i++;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	if (lastValidChar == '+' || lastValidChar == '-' || lastValidChar == '*' || lastValidChar == '/')
