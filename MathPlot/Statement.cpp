@@ -1,10 +1,26 @@
 #include "Statement.h"
 
+#include <stdexcept>
+
 #include "Subtract.h"
 
 Statement::Statement(std::unique_ptr<Expression>&& lhs, Relation relation, std::unique_ptr<Expression>&& rhs):
 	lhs(std::move(lhs)), relation(relation), rhs(std::move(rhs))
 {
+	if (!lhs || !rhs)
+	{
+		throw std::invalid_argument("lhs or rhs is nullptr");
+	}
+}
+
+Statement::Statement(const Statement& other): lhs(other.lhs->clone()), rhs(other.rhs->clone())
+{
+}
+
+Statement& Statement::operator=(Statement other)
+{
+	std::swap(*this, other);
+	return *this;
 }
 
 std::unique_ptr<Expression> Statement::getExpression()
@@ -29,7 +45,7 @@ bool Statement::evaluate(double x, double y)
 	case Relation::greaterEqual:
 		return l >= r;
 	default:
-		break;
+		return false;
 	}
 }
 
