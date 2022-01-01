@@ -9,18 +9,12 @@
 #include "Multiply.h"
 #include "Divide.h"
 #include "ExpressionParser.h"
-#include "Renderer.h"
 #include "Point.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace MathPlotTests
 {
-	TEST_CLASS(RendererTest)
-	{
-		
-	};
-
 	TEST_CLASS(PointTEst)
 	{
 	public:
@@ -62,7 +56,18 @@ namespace MathPlotTests
 			Assert::AreEqual(p1.y, 1.0);
 		}
 	};
+	TEST_CLASS(ExpressionTest)
+	{
+	public:
+		TEST_METHOD(TestClone)
+		{
+			ExpressionParser parser;
+			auto exp1 = parser.parse("2*3y-1/x");
+			auto exp2 = exp1->clone();
 
+			Assert::AreEqual(exp1->getString(), exp2->getString());
+		}
+	};
 	TEST_CLASS(ExpressionParserTest)
 	{
 	public:
@@ -112,6 +117,13 @@ namespace MathPlotTests
 				Assert::AreEqual(c2.evaluate(0, 0), -998.0);
 			}
 		}
+
+		TEST_METHOD(TestClone)
+		{
+			auto c1 = std::make_unique<Constant>(3.1415926);
+			auto c2 = c1->clone();
+			Assert::AreEqual(c1->getString(), c2->getString());
+		}
 	};
 
 	TEST_CLASS(UnkownsTest)
@@ -125,6 +137,13 @@ namespace MathPlotTests
 
 			Y y;
 			Assert::AreEqual(y.evaluate(1.2, 2.0), 2.0);
+		}
+
+		TEST_METHOD(TestClone)
+		{
+			auto c1 = std::make_unique<X>();
+			auto c2 = c1->clone();
+			Assert::AreEqual(c1->getString(), c2->getString());
 		}
 	};
 
@@ -153,6 +172,15 @@ namespace MathPlotTests
 				Assert::AreEqual(exp3.evaluate(3.0, -2.0), 1.0);
 			}
 		}
+
+		TEST_METHOD(TestClone)
+		{
+			auto c1 = std::make_unique<Constant>(4.0);
+			auto c2 = std::make_unique<Constant>(2.0);
+			auto e1 = std::make_unique<Plus>(std::move(c1), std::move(c2));
+			auto e2 = e1->clone();
+			Assert::AreEqual(e1->getString(), e2->getString());
+		}
 	};
 
 	TEST_CLASS(MinusTest)
@@ -177,6 +205,14 @@ namespace MathPlotTests
 				Assert::AreEqual(exp2.evaluate(-5.0, 0), -5.0 - (-5.0));
 				Assert::AreEqual(exp3.evaluate(3.0, -2.0), -2.0 - (3.0));
 			}
+		}
+		TEST_METHOD(TestClone)
+		{
+			auto c1 = std::make_unique<Constant>(4.0);
+			auto c2 = std::make_unique<Y>();
+			auto e1 = std::make_unique<Subtract>(std::move(c1), std::move(c2));
+			auto e2 = e1->clone();
+			Assert::AreEqual(e1->getString(), e2->getString());
 		}
 	};
 
@@ -203,6 +239,14 @@ namespace MathPlotTests
 				Assert::AreEqual(exp3.evaluate(3.0, -2.0), -2.0 * (3.0));
 			}
 		}
+		TEST_METHOD(TestClone)
+		{
+			auto c1 = std::make_unique<Constant>(2);
+			auto c2 = std::make_unique<X>();
+			auto e1 = std::make_unique<Multiply>(std::move(c1), std::move(c2));
+			auto e2 = e1->clone();
+			Assert::AreEqual(e1->getString(), e2->getString());
+		}
 	};
 
 	TEST_CLASS(DivideTest)
@@ -227,6 +271,14 @@ namespace MathPlotTests
 				Assert::AreEqual(exp2.evaluate(-5.0, 0), -5.0 / (-5.0));
 				Assert::AreEqual(exp3.evaluate(3.0, -2.0), -2.0 / (3.0));
 			}
+		}
+		TEST_METHOD(TestClone)
+		{
+			auto c1 = std::make_unique<Constant>(2);
+			auto c2 = std::make_unique<Constant>(3);
+			auto d1 = std::make_unique<Divide>(std::move(c1), std::move(c2));
+			auto d2 = d1->clone();
+			Assert::AreEqual(d1->getString(), d2->getString());
 		}
 	};
 }

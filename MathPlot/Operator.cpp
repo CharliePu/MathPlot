@@ -25,6 +25,17 @@ Operator::Operator(std::unique_ptr<Expression>&& l, std::unique_ptr<Expression>&
     exprs.emplace_back(std::move(r));
 }
 
+std::vector<std::unique_ptr<Expression>> Operator::cloneExpressions()
+{
+    std::vector<std::unique_ptr<Expression>> newExprs;
+    for (auto& expr : exprs)
+    {
+        newExprs.emplace_back(std::move(expr->clone()));
+    }
+
+    return std::move(newExprs);
+}
+
 std::unique_ptr<Expression>& Operator::getFirstExpression()
 {
     return exprs.at(0);

@@ -8,6 +8,15 @@ Multiply::Multiply(std::unique_ptr<Expression>&& l, std::unique_ptr<Expression>&
 
 }
 
+std::unique_ptr<Expression> Multiply::clone()
+{
+    auto newMultiply = std::make_unique<Multiply>();
+    auto expressions = cloneExpressions();
+    newMultiply->setFirstExpression(std::move(expressions[0]));
+    newMultiply->setSecondExpression(std::move(expressions[1]));
+    return std::move(newMultiply);
+}
+
 double Multiply::evaluate(double x, double y)
 {
     return getFirstExpression()->evaluate(x, y) * getSecondExpression()->evaluate(x, y);

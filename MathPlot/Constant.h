@@ -5,6 +5,7 @@ class Constant :
 {
 public:
     Constant(double c);
+    virtual std::unique_ptr<Expression> clone() override;
     virtual double evaluate(double x, double y) override;
     virtual std::string getString() override;
 private:
