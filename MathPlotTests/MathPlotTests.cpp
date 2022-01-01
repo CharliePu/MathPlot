@@ -9,12 +9,55 @@
 #include "Multiply.h"
 #include "Divide.h"
 #include "ExpressionParser.h"
+#include "StatementParser.h"
 #include "Point.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace MathPlotTests
 {
+	TEST_CLASS(StatementParserTest)
+	{
+	public:
+		TEST_METHOD(TestParse)
+		{
+			StatementParser parser;
+			std::string s1 = "2+3=5";
+			Assert::AreEqual("2 + 3 = 5", parser.parse(s1)->getString().c_str());
+
+			std::string s2 = "10x-9y<7x*x+8";
+			Assert::AreEqual("10 * x - 9 * y < 7 * x * x + 8", parser.parse(s2)->getString().c_str());
+			{
+				std::string s2 = "2 >= 3";
+				Assert::AreEqual("2 >= 3", parser.parse(s2)->getString().c_str());
+			}
+
+			{
+				std::string s2 = "2y <= 3x";
+				Assert::AreEqual("2 * y <= 3 * x", parser.parse(s2)->getString().c_str());
+			}
+
+			{
+				std::string s2 = "2y <= 3xxxx";
+				Assert::IsFalse(nullptr != parser.parse(s2));
+			}
+
+			{
+				std::string s2 = "2yx";
+				Assert::IsFalse(nullptr != parser.parse(s2));
+			}
+
+			{
+				std::string s2 = "2yx-3f=9";
+				Assert::IsFalse(nullptr != parser.parse(s2));
+			}
+
+			{
+				std::string s2 = "x>y>2xy=3";
+				Assert::IsFalse(nullptr != parser.parse(s2));
+			}
+		}
+	};
 	TEST_CLASS(PointTEst)
 	{
 	public:
