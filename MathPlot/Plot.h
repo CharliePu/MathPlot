@@ -7,6 +7,7 @@ class Plot
 {
 public:
 	Plot(const Statement& statement, double xmin, double xmax, double ymin, double ymax);
+	Statement getStatement();
 	double getXMin();
 	double getXMax();
 	double getYMin();

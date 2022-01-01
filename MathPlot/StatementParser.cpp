@@ -3,7 +3,7 @@
 
 #include "ExpressionParser.h"
 
-std::unique_ptr<Statement> StatementParser::parse(const std::string& s)
+std::optional<Statement> StatementParser::parse(const std::string& s)
 {
     std::unordered_map<Relation, std::string> m {
         { Relation::greaterEqual, ">="},
@@ -28,7 +28,7 @@ std::unique_ptr<Statement> StatementParser::parse(const std::string& s)
 
     if (operatorPos == 0 || operatorPos == s.size() - 1)
     {
-        return nullptr;
+        return std::nullopt;
     }
 
     ExpressionParser parser;
@@ -38,9 +38,8 @@ std::unique_ptr<Statement> StatementParser::parse(const std::string& s)
 
     if (!l || !r)
     {
-        return nullptr;
+        return std::nullopt;
     }
 
-
-	return std::make_unique<Statement>(std::move(l), relation, std::move(r));
+	return Statement(std::move(l), relation, std::move(r));
 }

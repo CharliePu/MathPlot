@@ -39,22 +39,22 @@ namespace MathPlotTests
 
 			{
 				std::string s2 = "2y <= 3xxxx";
-				Assert::IsFalse(nullptr != parser.parse(s2));
+				Assert::IsFalse(parser.parse(s2).has_value());
 			}
 
 			{
 				std::string s2 = "2yx";
-				Assert::IsFalse(nullptr != parser.parse(s2));
+				Assert::IsFalse(parser.parse(s2).has_value());
 			}
 
 			{
 				std::string s2 = "2yx-3f=9";
-				Assert::IsFalse(nullptr != parser.parse(s2));
+				Assert::IsFalse(parser.parse(s2).has_value());
 			}
 
 			{
 				std::string s2 = "x>y>2xy=3";
-				Assert::IsFalse(nullptr != parser.parse(s2));
+				Assert::IsFalse(parser.parse(s2).has_value());
 			}
 		}
 	};

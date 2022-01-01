@@ -11,6 +11,11 @@ Plot::Plot(const Statement& statement, double xmin, double xmax, double ymin, do
 	}
 }
 
+Statement Plot::getStatement()
+{
+	return statement;
+}
+
 double Plot::getXMin()
 {
 	return xmin;
