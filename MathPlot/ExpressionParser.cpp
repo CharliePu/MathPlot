@@ -34,7 +34,7 @@ std::unique_ptr<Expression> ExpressionParser::parse(const std::string& exp)
 		}
 		else if (c == 'x' || c == 'y')
 		{
-			if ((lastValidChar >= '0' && lastValidChar <= '9') || (lastValidChar == 'x' || lastValidChar == 'y' && lastValidChar != c))
+			if ((lastValidChar >= '0' && lastValidChar <= '9') || ((lastValidChar == 'x' || lastValidChar == 'y') && lastValidChar != c))
 			{
 				operatorStack.push(std::make_unique<Multiply>());
 			}
