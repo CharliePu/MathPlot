@@ -7,19 +7,21 @@
 Statement::Statement(std::unique_ptr<Expression>&& lhs, Relation relation, std::unique_ptr<Expression>&& rhs):
 	lhs(std::move(lhs)), relation(relation), rhs(std::move(rhs))
 {
-	if (!lhs || !rhs)
+	if (!this->lhs || !this->rhs)
 	{
 		throw std::invalid_argument("lhs or rhs is nullptr");
 	}
 }
 
-Statement::Statement(const Statement& other): lhs(other.lhs->clone()), rhs(other.rhs->clone())
+Statement::Statement(const Statement& other): lhs(other.lhs->clone()), rhs(other.rhs->clone()), relation(other.relation)
 {
 }
 
 Statement& Statement::operator=(Statement other)
 {
-	std::swap(*this, other);
+	std::swap(other.lhs, lhs);
+	std::swap(other.rhs, rhs);
+	std::swap(other.relation, relation);
 	return *this;
 }
 
