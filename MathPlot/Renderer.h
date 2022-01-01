@@ -1,20 +1,39 @@
 #pragma once
 #include <vector>
+
 #include "Shader.h"
+
+struct Point;
+
+namespace MathPlotTests
+{
+	class RendererTest;
+}
 
 class Renderer
 {
+	friend class MathPlotTests::RendererTest;
 public:
-	static constexpr char vertexShaderPath[] = R"(.\shaders\shader.vert)";
-	static constexpr char fragmentShaderPath[] = R"(.\shaders\shader.frag)";
 	Renderer(int width, int height);
 
 
 	void draw();
-	void updateData(const std::vector<std::vector<double>>& data);
+	void updateData(const std::vector<std::vector<double>>& data, bool ineqaulity);
 private:
-	Shader shader;
-	unsigned int vao, vbo, fbo;
+	void updateRegionData(const std::vector<std::vector<double>>& data);
+	void updateLineData(const std::vector<std::vector<double>>& data);
+
+	void drawRegions();
+	void drawLines();
+
+	void processRect(const std::array<Point, 4>& points);
+	void identifyLineSegment(std::array<Point, 3> points, std::vector<double>& vertices);
+	Point findZeroPoint(Point p1, Point p2);
+
+	bool shouldDrawRegions;
+
+	Shader regionShader, lineShader;
+	unsigned int quadVao, quadVbo, lineVao, lineVbo;
 	unsigned int textureId;
 };
 

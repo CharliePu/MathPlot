@@ -9,11 +9,60 @@
 #include "Multiply.h"
 #include "Divide.h"
 #include "ExpressionParser.h"
+#include "Renderer.h"
+#include "Point.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace MathPlotTests
 {
+	TEST_CLASS(RendererTest)
+	{
+		
+	};
+
+	TEST_CLASS(PointTEst)
+	{
+	public:
+		TEST_METHOD(TestConstruction)
+		{
+			Point p1(2.0, 3.0), p2, p3(1.0, 4.0, 6.0);
+
+			Assert::AreEqual(p1.x, 2.0);
+			Assert::AreEqual(p1.y, 3.0);
+			Assert::AreEqual(p1.value, 0.0);
+
+			Assert::AreEqual(p2.x, 0.0);
+			Assert::AreEqual(p2.y, 0.0);
+			Assert::AreEqual(p2.value, 0.0);
+
+			Assert::AreEqual(p3.x, 1.0);
+			Assert::AreEqual(p3.y, 4.0);
+			Assert::AreEqual(p3.value, 6.0);
+		}
+		TEST_METHOD(TestArithmatics)
+		{
+			Point p1(2.0, 3.0);
+
+			p1 = p1 + Point(3.0, -4.0);
+			Assert::AreEqual(p1.x, 5.0);
+			Assert::AreEqual(p1.y, -1.0);
+
+			p1 = p1 - Point(2.0, -3.0);
+			Assert::AreEqual(p1.x, 3.0);
+			Assert::AreEqual(p1.y, 2.0);
+
+			p1 = p1 * 3;
+			Assert::AreEqual(p1.x, 9.0);
+			Assert::AreEqual(p1.y, 6.0);
+
+
+			p1 = p1 / 6;
+			Assert::AreEqual(p1.x, 1.5);
+			Assert::AreEqual(p1.y, 1.0);
+		}
+	};
+
 	TEST_CLASS(ExpressionParserTest)
 	{
 	public:
