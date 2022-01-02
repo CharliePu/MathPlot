@@ -108,6 +108,9 @@
     <ClCompile Include="Exponent.cpp">
       <Filter>Source Files\Expressions\Operators</Filter>
     </ClCompile>
+    <ClCompile Include="Absolute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Expression.h">
@@ -175,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="Exponent.h">
       <Filter>Header Files\Expressions\Operators</Filter>
+    </ClInclude>
+    <ClInclude Include="Absolute.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

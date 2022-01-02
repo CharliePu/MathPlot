@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Absolute.cpp" />
     <ClCompile Include="Constant.cpp" />
     <ClCompile Include="Divide.cpp" />
     <ClCompile Include="Exponent.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="Y.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Absolute.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="Divide.h" />
     <ClInclude Include="Exponent.h" />
