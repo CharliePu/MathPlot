@@ -4,7 +4,8 @@
 #include <iostream>
 
 #include "Program.h"
-#include "Renderer.h"
+#include "RegionRenderer.h"
+#include "LineRenderer.h"
 #include "Expression.h"
 #include "Subtract.h"
 #include "ExpressionParser.h"
@@ -14,16 +15,22 @@
 int main()
 {
     Program program(getProgram());
-    Renderer renderer(program.screenWidth, program.screenHeight);
 
-    Plot plot(StatementParser().parse("y < x * x - 2xy").value(), -5.0, 5.0, -2.0, 25.0);
+    RegionRenderer regionRenderer;
+    LineRenderer lineRenderer;
+
+    Plot plot(StatementParser().parse("y < x * x").value(), -5.0, 5.0, -2.0, 25.0);
+
     Rasterizer rasterizer;
     rasterizer.rasterize(plot, 0.02);
-    renderer.updateData(rasterizer.generateRegions(), true);
+
+    regionRenderer.updateData(rasterizer.generateRegions());
+    lineRenderer.updateData(rasterizer.generateRegions());
 
     while (!program.shouldClose())
     {
-        renderer.draw();
+        regionRenderer.draw();
+        lineRenderer.draw();
     }
 
     return 0;
