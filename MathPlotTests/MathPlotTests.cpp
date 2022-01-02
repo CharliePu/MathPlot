@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 
+#include <cmath>
+
 #include "Constant.h"
 #include "X.h"
 #include "Y.h"
@@ -11,6 +13,7 @@
 #include "ExpressionParser.h"
 #include "StatementParser.h"
 #include "Point.h"
+#include "Exponent.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -144,6 +147,10 @@ namespace MathPlotTests
 			Assert::AreEqual(2.0, parser.parse("(50 / ((x + y) * 5))")->evaluate(2.0, 3.0));
 			Assert::AreEqual(40.0, parser.parse("2((2(2(3+x))))")->evaluate(2.0, 3.0));
 			Assert::AreEqual(6.0, parser.parse("((((3))(x)))")->evaluate(2.0, 3.0));
+
+
+			Assert::AreEqual("2 ^ 3", parser.parse("2^3")->getString().c_str());
+			Assert::AreEqual("x ^ y - 1", parser.parse("x^y-1")->getString().c_str());
 
 			Assert::IsFalse(parser.parse("Hello123.456World") != nullptr);
 			Assert::IsFalse(parser.parse("Hello World") != nullptr);
@@ -340,6 +347,39 @@ namespace MathPlotTests
 			auto c1 = std::make_unique<Constant>(2);
 			auto c2 = std::make_unique<Constant>(3);
 			auto d1 = std::make_unique<Divide>(std::move(c1), std::move(c2));
+			auto d2 = d1->clone();
+			Assert::AreEqual(d1->getString(), d2->getString());
+		}
+	};
+
+	TEST_CLASS(ExponentTest)
+	{
+	public:
+
+		TEST_METHOD(TestEvaluate)
+		{
+			{
+				Constant c1(21.3), c2(99.0), c3(-99.0);
+				Exponent exp1(std::make_unique<Constant>(c1), std::make_unique<Constant>(c2)), exp2(std::make_unique<Constant>(c2), std::make_unique<Constant>(c3));
+				Assert::AreEqual(exp1.evaluate(0, 0), std::pow(21.3, 99.0));
+				Assert::AreEqual(exp2.evaluate(0, 0), std::pow(99.0, -99.0));
+			}
+
+			{
+				Constant c1(3.0);
+				X x;
+				Y y;
+				Exponent exp1(std::make_unique<Constant>(c1), std::make_unique<X>(x)), exp2(std::make_unique<X>(x), std::make_unique<X>(x)), exp3(std::make_unique<Y>(y), std::make_unique<X>(x));
+				Assert::AreEqual(exp1.evaluate(1.0, 0), std::pow(3.0, 1.0));
+				Assert::AreEqual(exp2.evaluate(-5.0, 0), std::pow(-5.0, -5.0));
+				Assert::AreEqual(exp3.evaluate(3.0, -2.0), std::pow(-2.0, 3.0));
+			}
+		}
+		TEST_METHOD(TestClone)
+		{
+			auto c1 = std::make_unique<Constant>(2);
+			auto c2 = std::make_unique<Constant>(3);
+			auto d1 = std::make_unique<Exponent>(std::move(c1), std::move(c2));
 			auto d2 = d1->clone();
 			Assert::AreEqual(d1->getString(), d2->getString());
 		}

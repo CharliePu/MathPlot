@@ -4,6 +4,7 @@
 #include "Subtract.h"
 #include "Divide.h"
 #include "Multiply.h"
+#include "Exponent.h"
 
 Operator::Operator()
 {
@@ -81,6 +82,10 @@ std::unique_ptr<Operator> createOperator(char c)
     if (c == '/')
     {
         return std::make_unique<Divide>();
+    }
+    if (c == '^')
+    {
+        return std::make_unique<Exponent>();
     }
 
     return nullptr;

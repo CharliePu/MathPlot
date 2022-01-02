@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="Constant.cpp" />
     <ClCompile Include="Divide.cpp" />
+    <ClCompile Include="Exponent.cpp" />
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="ExpressionParser.cpp" />
     <ClCompile Include="LineRenderer.cpp" />
@@ -169,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="Constant.h" />
     <ClInclude Include="Divide.h" />
+    <ClInclude Include="Exponent.h" />
     <ClInclude Include="Expression.h" />
     <ClInclude Include="ExpressionParser.h" />
     <ClInclude Include="LineRenderer.h" />

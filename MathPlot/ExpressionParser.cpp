@@ -195,7 +195,7 @@ bool ExpressionParser::isNumber(char c)
 
 bool ExpressionParser::isOperator(char c)
 {
-	return c == '+' || c == '-' || c == '*' || c == '/';
+	return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
 }
 
 bool ExpressionParser::isUnkown(char c)
@@ -213,6 +213,8 @@ int ExpressionParser::getOperatorPrecedence(char c)
 	case '*':
 	case '/':
 		return 3;
+	case '^':
+		return 5;
 	case '(':
 		return 1;
 	default:
