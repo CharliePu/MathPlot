@@ -48,8 +48,7 @@ std::unique_ptr<Expression> ExpressionParser::parse(const std::string& exp)
 		{
 			lastValidChar = c;
 			auto op = createOperator(c);
-			bool shouldProcess = !operatorStack.empty() && op->getPrecedence() < operatorStack.top()->getPrecedence();
-			if (shouldProcess)
+			while (!operatorStack.empty() && op->getPrecedence() < operatorStack.top()->getPrecedence())
 			{
 				if (!process())
 				{

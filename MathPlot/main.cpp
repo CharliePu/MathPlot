@@ -20,9 +20,7 @@ int main()
     RegionRenderer regionRenderer;
     LineRenderer lineRenderer;
     
-    auto statement = StatementParser().parse("x*x*x*x*x-4*x*x*x*x+8*x*x-0.4*x*x+1=y").value();
-    std::cout<<statement.getString() << std::endl;
-    Plot plot(StatementParser().parse("x*x*x*x*x-4*x*x*x*x+8*x*x-0.4*x*x+1=y").value(), -20.0, 20.0, -80.0, 80.0);
+    Plot plot(StatementParser().parse("y=x*x*x*x*x-4*x*x*x*x+8*x*x-0.4*x*x+1").value(), -10.0, 10.0, -8.0, 8.0);
 
     Rasterizer rasterizer;
     rasterizer.rasterize(plot, 0.05);
