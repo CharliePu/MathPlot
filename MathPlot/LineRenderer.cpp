@@ -9,6 +9,8 @@ LineRenderer::LineRenderer():
 shader(R"(.\shaders\line.vert)", R"(.\shaders\line.frag)")
 {
     glLineWidth(4.0);
+    glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);

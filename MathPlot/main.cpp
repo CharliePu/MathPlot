@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <thread>
 
 #include "Program.h"
 #include "RegionRenderer.h"
@@ -12,6 +13,23 @@
 #include "StatementParser.h"
 #include "Rasterizer.h"
 #include <iostream>
+#include <atomic>
+
+std::atomic<bool> inputShouldClose, dataReady;
+std::string s;
+
+void concurrentInput()
+{
+    while (!inputShouldClose)
+    {
+        if (!dataReady)
+        {
+            std::cout << "Input an equation/inequality: ";
+            std::cin >> s;
+            dataReady = true;
+        }
+    }
+}
 
 int main()
 {
@@ -20,19 +38,33 @@ int main()
     RegionRenderer regionRenderer;
     LineRenderer lineRenderer;
     
-    Plot plot(StatementParser().parse("y=x*x*x*x*x-4*x*x*x*x+8*x*x-0.4*x*x+1").value(), -10.0, 10.0, -8.0, 8.0);
-
-    Rasterizer rasterizer;
-    rasterizer.rasterize(plot, 0.05);
-
-    regionRenderer.updateData(rasterizer.generateRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
-    lineRenderer.updateData(rasterizer.generateLines());
+    inputShouldClose = false;
+    std::thread inputThread(concurrentInput);
 
     while (!program.shouldClose())
     {
         regionRenderer.draw();
         lineRenderer.draw();
+
+        if (dataReady)
+        {
+            std::optional<Statement> statement = StatementParser().parse(s);
+            if (statement.has_value())
+            {
+                Plot plot(*statement, -10.0, 10.0, -8.0, 8.0);
+
+                Rasterizer rasterizer;
+                rasterizer.rasterize(plot, 0.1);
+
+                regionRenderer.updateData(rasterizer.generateRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
+                lineRenderer.updateData(rasterizer.generateLines());
+            }
+
+            dataReady = false;
+        }
     }
+
+    inputThread.join();
 
     return 0;
 }

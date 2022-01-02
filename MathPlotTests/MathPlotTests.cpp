@@ -38,6 +38,11 @@ namespace MathPlotTests
 			}
 
 			{
+				std::string s2 = "2y * y * y - 2x * x <= 3x";
+				Assert::AreEqual("2 * y * y * y - 2 * x * x <= 3 * x", parser.parse(s2)->getString().c_str());
+			}
+
+			{
 				std::string s2 = "2y <= 3xxxx";
 				Assert::IsFalse(parser.parse(s2).has_value());
 			}
