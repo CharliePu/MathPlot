@@ -22,11 +22,6 @@ double Plus::evaluate(double x, double y)
     return getFirstExpression()->evaluate(x, y) + getSecondExpression()->evaluate(x, y);
 }
 
-int Plus::getPrecedence()
-{
-    return 1;
-}
-
 std::string Plus::getString()
 {
     return getFirstExpression()->getString() + " + " + getSecondExpression()->getString();

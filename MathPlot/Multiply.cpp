@@ -22,11 +22,6 @@ double Multiply::evaluate(double x, double y)
     return getFirstExpression()->evaluate(x, y) * getSecondExpression()->evaluate(x, y);
 }
 
-int Multiply::getPrecedence()
-{
-    return 2;
-}
-
 std::string Multiply::getString()
 {
     return getFirstExpression()->getString() + " * " + getSecondExpression()->getString();

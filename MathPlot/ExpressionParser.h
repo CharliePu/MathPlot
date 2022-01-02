@@ -10,12 +10,18 @@
 class ExpressionParser
 {
 public:
-	std::unique_ptr<Expression> parse(const std::string& exp);
+	std::unique_ptr<Expression> parse(std::string exp);
 private:
 	double extractNumber(const std::string& exp, int& i);
+	bool isNumber(char c);
+	bool isOperator(char c);
+	bool isUnkown(char c);
+	int getOperatorPrecedence(char c);
+
+
 	bool process();
 
-	std::stack<std::unique_ptr<Operator>> operatorStack;
+	std::stack<char> operatorStack;
 	std::stack<std::unique_ptr<Expression>> valueStack;
 };
 

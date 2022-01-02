@@ -22,7 +22,6 @@ public:
     void setFirstExpression(std::unique_ptr<Expression>&& expr);
     void setSecondExpression(std::unique_ptr<Expression>&& expr);
 
-    virtual int getPrecedence() = 0;
 private:
     std::vector<std::unique_ptr<Expression>> exprs;
 };

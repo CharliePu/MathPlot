@@ -134,11 +134,13 @@ namespace MathPlotTests
 			Assert::AreEqual("37 * x + 6", parser.parse("37x + 6")->getString().c_str());
 			Assert::AreEqual("102 * x * 400", parser.parse("102x * 400")->getString().c_str());
 			Assert::AreEqual("x * y + 2 * x", parser.parse("xy + 2x")->getString().c_str());
+			Assert::AreEqual("2 * x * y + 4 * x", parser.parse("2xy+4x")->getString().c_str());
 
 			Assert::IsFalse(parser.parse("Hello123.456World") != nullptr);
 			Assert::IsFalse(parser.parse("Hello World") != nullptr);
+			Assert::IsFalse(parser.parse("y3+xy") != nullptr);
 			Assert::IsFalse(parser.parse("yy") != nullptr);
-			Assert::IsFalse(parser.parse("232 223") != nullptr);
+			Assert::IsFalse(parser.parse("  ") != nullptr);
 			Assert::IsFalse(parser.parse("+-*/") != nullptr);
 			Assert::IsFalse(parser.parse("2 3 *") != nullptr);
 		}

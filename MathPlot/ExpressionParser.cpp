@@ -10,56 +10,68 @@
 #include "Divide.h"
 #include "Multiply.h"
 
-std::unique_ptr<Expression> ExpressionParser::parse(const std::string& exp)
+std::unique_ptr<Expression> ExpressionParser::parse(std::string exp)
 {
+	// remove spaces
+	exp.erase(std::remove(exp.begin(), exp.end(), ' '), exp.end());
+
 	if (exp.empty())
 	{
 		return nullptr;
 	}
 
-	operatorStack = std::stack<std::unique_ptr<Operator>>();
+	operatorStack = std::stack<char>();
 	valueStack = std::stack<std::unique_ptr<Expression>>();
 
-	char lastValidChar = ' ';
+
+	char prevValidChar = ' ';
 
 	for (int i = 0; i < exp.size();)
 	{
 		char c = exp[i];
 
-		if (c >= '0' && c <= '9')
+		if (isNumber(c))
 		{
-			valueStack.push(std::make_unique<Constant>(extractNumber(exp, i)));
-			lastValidChar = c;
-			continue;
-		}
-		else if (c == 'x' || c == 'y')
-		{
-			if ((lastValidChar >= '0' && lastValidChar <= '9') || ((lastValidChar == 'x' || lastValidChar == 'y') && lastValidChar != c))
+			// y2 => y * 2 is illegal
+			if (isUnkown(prevValidChar))
 			{
-				operatorStack.push(std::make_unique<Multiply>());
+				return nullptr;
+			}
+
+			double number = extractNumber(exp, i);
+			valueStack.push(std::make_unique<Constant>(number));
+			prevValidChar = c;
+		}
+		else if (isUnkown(c))
+		{
+			// xy => x * y and 2x => 2*x
+			if (isNumber(prevValidChar) || isUnkown(prevValidChar))
+			{
+				// xx => x*x or yy => y*y is illegal
+				if (prevValidChar == c)
+				{
+					return nullptr;
+				}
+
+				operatorStack.push('*');
 			}
 
 			valueStack.push(createUnkown(c));
-			lastValidChar = c;
+			prevValidChar = c;
 			i++;
 
 		}
-		else if (c == '+' || c == '-' || c == '*' || c == '/')
+		else if (isOperator(c))
 		{
-			lastValidChar = c;
-			auto op = createOperator(c);
-			while (!operatorStack.empty() && op->getPrecedence() < operatorStack.top()->getPrecedence())
+			while (!operatorStack.empty() && getOperatorPrecedence(c) < getOperatorPrecedence(operatorStack.top()))
 			{
 				if (!process())
 				{
 					return nullptr;
 				}
 			}
-			operatorStack.push(std::move(op));
-			i++;
-		}
-		else if (c == ' ')
-		{
+			operatorStack.push(c);
+			prevValidChar = c;
 			i++;
 		}
 		else
@@ -68,7 +80,7 @@ std::unique_ptr<Expression> ExpressionParser::parse(const std::string& exp)
 		}
 	}
 
-	if (lastValidChar == '+' || lastValidChar == '-' || lastValidChar == '*' || lastValidChar == '/')
+	if (isOperator(prevValidChar))
 	{
 		return nullptr;
 	}
@@ -121,6 +133,37 @@ double ExpressionParser::extractNumber(const std::string& exp, int& i)
 	return d;
 }
 
+bool ExpressionParser::isNumber(char c)
+{
+	return c >= '0' && c <= '9';
+}
+
+bool ExpressionParser::isOperator(char c)
+{
+	return c == '+' || c == '-' || c == '*' || c == '/';
+}
+
+bool ExpressionParser::isUnkown(char c)
+{
+	return c == 'x' || c == 'y';
+}
+
+int ExpressionParser::getOperatorPrecedence(char c)
+{
+	switch (c)
+	{
+	case '+':
+	case '-':
+		return 1;
+	case '*':
+	case '/':
+		return 2;
+	default:
+		return 0;
+	}
+}
+
+
 bool ExpressionParser::process()
 {
 	if (operatorStack.size() < 1 || valueStack.size() < 2)
@@ -128,7 +171,7 @@ bool ExpressionParser::process()
 		return false;
 	}
 
-	auto op = std::move(operatorStack.top());
+	auto op = std::move(createOperator(operatorStack.top()));
 	operatorStack.pop();
 	
 	auto rv = std::move(valueStack.top());
