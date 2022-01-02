@@ -19,10 +19,10 @@ int main()
     RegionRenderer regionRenderer;
     LineRenderer lineRenderer;
 
-    Plot plot(StatementParser().parse("y < x * x").value(), -5.0, 5.0, -2.0, 25.0);
+    Plot plot(StatementParser().parse("y <= x * x").value(), 0.0, 2.0, 0.0, 2.0);
 
     Rasterizer rasterizer;
-    rasterizer.rasterize(plot, 0.02);
+    rasterizer.rasterize(plot, 1.0);
 
     regionRenderer.updateData(rasterizer.generateRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
     lineRenderer.updateData(rasterizer.generateLines());

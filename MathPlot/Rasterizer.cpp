@@ -10,7 +10,9 @@ void Rasterizer::rasterize(Plot plot, double step)
     double ymin = plot.getYMin();
     double ymax = plot.getYMax();
 
-    Statement statement = plot.getStatement();
+    this->plot = plot;
+
+    auto expression = plot.getStatement().getExpression()->clone();
 
 	data.clear();
     for (double y = ymin; y <= ymax; y += step)
@@ -18,7 +20,9 @@ void Rasterizer::rasterize(Plot plot, double step)
         std::vector<Point> row;
         for (double x = xmin; x <= xmax; x += step)
         {
-            row.emplace_back(x, y, static_cast<double>(statement.evaluate(x, y)));
+            row.emplace_back((x - xmin)/(xmax - xmin) * 2.0 - 1.0,
+                (y - ymin) / (ymax - ymin) * 2.0 -1.0, 
+                static_cast<double>(expression->evaluate(x, y)));
         }
         data.emplace_back(row);
     }
@@ -26,7 +30,21 @@ void Rasterizer::rasterize(Plot plot, double step)
 
 std::vector<double> Rasterizer::generateLines()
 {
-	return std::vector<double>();
+    std::vector<double> vertices;
+    for (size_t y = data.size() - 1; y > 0; y--)
+    {
+        for (size_t x = 0; x < data.front().size() - 1; x++)
+        {
+            processRect({
+                data[y][x],
+                data[y][x + 1],
+                data[y - 1][x],
+                data[y - 1][x + 1]
+                }, vertices);
+        }
+    }
+    
+	return vertices;
 }
 
 void Rasterizer::processRect(const std::array<Point, 4>& points, std::vector<double>& vertices)
@@ -53,23 +71,26 @@ void Rasterizer::identifyLineSegment(std::array<Point, 3> points, std::vector<do
 {
     std::sort(points.begin(), points.end());
 
-    size_t onPointIndex = -1, abovePointIndex = -1, belowPointIndex = 0;
-    for (size_t i = 0; i < points.size(); i++)
+
+    size_t onPointIndex = 0, abovePointIndex = 0, belowPointIndex = 0;
+    size_t belowCount = 0, onCount = 0, aboveCount = 0;
+
+    int i = 0;
+    while (i < points.size() && points[i].value < 0)
     {
-        if (onPointIndex != -1 && points[i].value == 0)
-        {
-            onPointIndex = i;
-        }
-        if (abovePointIndex != -1 && points[i].value > 0)
-        {
-            abovePointIndex = i;
-            break;
-        }
+        i++;
+        belowCount++;
     }
 
-    size_t belowCount = onPointIndex;
-    size_t onCount = abovePointIndex - onPointIndex;
-    size_t aboveCount = vertices.size() - abovePointIndex;
+    onPointIndex = i;
+    while (i < points.size() && points[i].value == 0)
+    {
+        i++;
+        onCount++;
+    }
+
+    abovePointIndex = i;
+    aboveCount = points.size() - belowCount - onCount;
 
     if (aboveCount == 3 || belowCount == 3 || onCount == 3)
     {
@@ -126,30 +147,51 @@ Point Rasterizer::findZeroPoint(Point p1, Point p2)
 
 std::vector<unsigned char> Rasterizer::generateRegions()
 {
-    std::vector<unsigned char> flattenedData;
-    flattenedData.reserve(data.size() * data.front().size());
-    for (int i = 0; i < data.size(); i++)
+    if (!plot.has_value())
     {
-        for (int j = 0; j < data.front().size(); j++)
+        return std::vector<unsigned char>();
+    }
+
+    auto comparator = plot->getStatement().getComparator();
+
+    std::vector<std::vector<unsigned char>> pixels(data.size() - 1, std::vector<unsigned char>(data.front().size() - 1));
+
+    for (size_t y = 0; y < data.size() - 1; y++)
+    {
+        for (size_t x = 0; x < data.front().size() - 1; x++)
         {
-            flattenedData.push_back(static_cast<unsigned char>(data[i][j].value * 255));
+            pixels[y][x] = 
+                comparator(data[y][x].value, 0) &&
+                comparator(data[y][x + 1].value, 0) &&
+                comparator(data[y + 1][x].value, 0) &&
+                comparator(data[y + 1][x + 1].value, 0);
+        }
+    }
+
+    std::vector<unsigned char> flattenedPixel;
+    flattenedPixel.reserve(pixels.size() * pixels.front().size());
+    for (int i = 0; i < pixels.size(); i++)
+    {
+        for (int j = 0; j < pixels.front().size(); j++)
+        {
+            flattenedPixel.push_back(pixels[i][j] * 255);
         }
 
         // 4-byte alignment
-        while (flattenedData.size() % 4 != 0)
+        while (flattenedPixel.size() % 4 != 0)
         {
-            flattenedData.push_back(0);
+            flattenedPixel.push_back(0);
         }
     }
-	return flattenedData;
+	return flattenedPixel;
 }
 
 size_t Rasterizer::getRegionWidth()
 {
-    return data.front().size();
+    return data.front().size() - 1;
 }
 
 size_t Rasterizer::getRegionHeight()
 {
-    return data.size();
+    return data.size() - 1;
 }

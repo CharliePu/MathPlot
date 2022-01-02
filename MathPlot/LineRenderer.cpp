@@ -22,15 +22,18 @@ void LineRenderer::draw()
 {
     shader.use();
     glBindVertexArray(vao);
-    glDrawArrays(GL_LINES, 0, 2);
+    glDrawArrays(GL_LINES, 0, vertexCount);
 }
 
 void LineRenderer::updateData(const std::vector<double>& data)
-{   
-    std::vector<double> lineVertices = {
-    -1.0, -1.0,
-    1.0, 1.0
-    };
+{
+    //std::vector<double> lineVertices = {
+    //-1.0, -1.0,
+    //1.0, 1.0
+    //};
+
+    vertexCount = data.size() / 2;
+
     glBindVertexArray(vao);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(double) * lineVertices.size(), lineVertices.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(double) * data.size(), data.data(), GL_DYNAMIC_DRAW);
 }

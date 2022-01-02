@@ -22,6 +22,7 @@ public:
 	Statement &operator=(Statement other);
 
 	std::unique_ptr<Expression> getExpression();
+	std::function<bool(double, double)> getComparator();
 	bool evaluate(double x, double y);
 	std::string getString();
 

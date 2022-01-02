@@ -30,25 +30,28 @@ std::unique_ptr<Expression> Statement::getExpression()
 	return std::make_unique<Subtract>(lhs->clone(), rhs->clone());
 }
 
-bool Statement::evaluate(double x, double y)
+std::function<bool(double, double)> Statement::getComparator()
 {
-	auto l = lhs->evaluate(x, y);
-	auto r = rhs->evaluate(x, y);
 	switch (relation)
 	{
 	case Relation::equal:
-		return l == r;
+		return std::equal_to<double>();
 	case Relation::less:
-		return l < r;
+		return std::less<double>();
 	case Relation::greater:
-		return l > r;
+		return std::greater<double>();
 	case Relation::lessEqual:
-		return l <= r;
+		return std::less_equal<double>();
 	case Relation::greaterEqual:
-		return l >= r;
+		return std::greater_equal<double>();
 	default:
-		return false;
+		return [](double, double) {return true; };
 	}
+}
+
+bool Statement::evaluate(double x, double y)
+{
+	return getComparator()(getExpression()->evaluate(x, y), 0.0);
 }
 
 std::string Statement::getString()

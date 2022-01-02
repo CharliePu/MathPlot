@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 #include "Plot.h"
 
 #include "Point.h"
@@ -18,5 +19,6 @@ public:
 	void identifyLineSegment(std::array<Point, 3> points, std::vector<double>& vertices);
 	Point findZeroPoint(Point p1, Point p2);
 private:
+	std::optional<Plot> plot;
 	std::vector<std::vector<Point>> data;
 };
