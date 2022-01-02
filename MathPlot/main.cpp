@@ -24,8 +24,8 @@ int main()
     Rasterizer rasterizer;
     rasterizer.rasterize(plot, 0.02);
 
-    regionRenderer.updateData(rasterizer.generateRegions());
-    lineRenderer.updateData(rasterizer.generateRegions());
+    regionRenderer.updateData(rasterizer.generateRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
+    lineRenderer.updateData(rasterizer.generateLines());
 
     while (!program.shouldClose())
     {

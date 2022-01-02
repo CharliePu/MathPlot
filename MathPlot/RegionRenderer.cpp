@@ -40,29 +40,8 @@ void RegionRenderer::draw()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void RegionRenderer::updateData(const std::vector<std::vector<double>>& data)
+void RegionRenderer::updateData(const std::vector<unsigned char>& data, size_t width, size_t height)
 {
-    if (data.size() == 0 || data.front().size() == 0)
-    {
-        return;
-    }
-
-    std::vector<unsigned char> flattenedData;
-    flattenedData.reserve(data.size() * data.front().size());
-    for (int i = 0; i < data.size(); i++)
-    {
-        for (int j = 0; j < data.front().size(); j++)
-        {
-            flattenedData.push_back(static_cast<unsigned char>(data[i][j] * 255));
-        }
-
-        // 4-byte alignment
-        while (flattenedData.size() % 4 != 0)
-        {
-            flattenedData.push_back(0);
-        }
-    }
-
     glBindTexture(GL_TEXTURE_2D, textureId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.front().size(), data.size(), 0, GL_RED, GL_UNSIGNED_BYTE, &flattenedData[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data.data());
 }
