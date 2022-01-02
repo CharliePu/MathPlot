@@ -54,7 +54,7 @@ int main()
                 Plot plot(*statement, -10.0, 10.0, -8.0, 8.0);
 
                 Rasterizer rasterizer;
-                rasterizer.rasterize(plot, 0.1);
+                rasterizer.rasterize(plot, 0.01);
 
                 regionRenderer.updateData(rasterizer.generateRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
                 lineRenderer.updateData(rasterizer.generateLines());

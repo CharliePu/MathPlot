@@ -74,6 +74,40 @@ std::unique_ptr<Expression> ExpressionParser::parse(std::string exp)
 			prevValidChar = c;
 			i++;
 		}
+		else if (c == '(')
+		{
+			// 3(x+y) =>3*(x+y)
+			if (isUnkown(prevValidChar) || isNumber(prevValidChar) || prevValidChar == ')')
+			{
+				operatorStack.push('*');
+			}
+
+			operatorStack.push(c);
+			prevValidChar = c;
+			i++;
+		}
+		else if (c == ')')
+		{
+			while (!operatorStack.empty() && operatorStack.top() != '(')
+			{
+				if (!process())
+				{
+					return nullptr;
+				}
+			}
+
+			if (operatorStack.empty())
+			{
+				return nullptr;
+			}
+			else
+			{
+				operatorStack.pop();
+			}
+
+			prevValidChar = c;
+			i++;
+		}
 		else
 		{
 			return nullptr;
@@ -87,18 +121,39 @@ std::unique_ptr<Expression> ExpressionParser::parse(std::string exp)
 
 	while (!operatorStack.empty())
 	{
-		if (!process())
+		if (operatorStack.top() == ')')
+		{
+			while (!operatorStack.empty() && operatorStack.top() != '(')
+			{
+				if (!process())
+				{
+					return nullptr;
+				}
+			}
+
+			if (operatorStack.empty())
+			{
+				return nullptr;
+			}
+			else
+			{
+				operatorStack.pop();
+			}
+		}
+		else if (!process())
 		{
 			return nullptr;
 		}
 	}
 
-	if (valueStack.size() > 1)
+	if (valueStack.size() == 1)
+	{
+		return std::move(valueStack.top());
+	}
+	else
 	{
 		return nullptr;
 	}
-
-	return std::move(valueStack.top());
 }
 
 double ExpressionParser::extractNumber(const std::string& exp, int& i)
@@ -154,10 +209,12 @@ int ExpressionParser::getOperatorPrecedence(char c)
 	{
 	case '+':
 	case '-':
-		return 1;
+		return 2;
 	case '*':
 	case '/':
-		return 2;
+		return 3;
+	case '(':
+		return 1;
 	default:
 		return 0;
 	}

@@ -136,6 +136,15 @@ namespace MathPlotTests
 			Assert::AreEqual("x * y + 2 * x", parser.parse("xy + 2x")->getString().c_str());
 			Assert::AreEqual("2 * x * y + 4 * x", parser.parse("2xy+4x")->getString().c_str());
 
+
+			Assert::AreEqual(22.0, parser.parse("2 * (x + 4)")->evaluate(7.0, 0.0));
+			Assert::AreEqual(20.0, parser.parse("4(y + 3)")->evaluate(0.0, 2.0));
+			Assert::AreEqual(-3.0, parser.parse("(y + 3) / (x - 4)")->evaluate(1.0, 6.0));
+			Assert::AreEqual(5.0, parser.parse("(2 + 3) * (5 - 4)")->evaluate(0.0, 0.0));
+			Assert::AreEqual(2.0, parser.parse("(50 / ((x + y) * 5))")->evaluate(2.0, 3.0));
+			Assert::AreEqual(40.0, parser.parse("2((2(2(3+x))))")->evaluate(2.0, 3.0));
+			Assert::AreEqual(6.0, parser.parse("((((3))(x)))")->evaluate(2.0, 3.0));
+
 			Assert::IsFalse(parser.parse("Hello123.456World") != nullptr);
 			Assert::IsFalse(parser.parse("Hello World") != nullptr);
 			Assert::IsFalse(parser.parse("y3+xy") != nullptr);
@@ -143,6 +152,10 @@ namespace MathPlotTests
 			Assert::IsFalse(parser.parse("  ") != nullptr);
 			Assert::IsFalse(parser.parse("+-*/") != nullptr);
 			Assert::IsFalse(parser.parse("2 3 *") != nullptr);
+
+			Assert::IsFalse(parser.parse("()") != nullptr);
+			Assert::IsFalse(parser.parse("(3))))") != nullptr);
+			Assert::IsFalse(parser.parse("((((3))()))") != nullptr);
 		}
 	};
 	TEST_CLASS(ConstantTest)
