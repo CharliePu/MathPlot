@@ -110,7 +110,7 @@ void Rasterizer::identifyLineSegment(std::array<Point, 3> points, std::vector<do
         p2 = points[onPointIndex + 1];
     }
 
-    if (onCount == 1 && aboveCount == 1 && belowCount == 0)
+    if (onCount == 1 && aboveCount == 1 && belowCount == 1)
     {
         p1 = findZeroPoint(points[abovePointIndex], points[belowPointIndex]);
         p2 = points[onPointIndex];
@@ -139,7 +139,7 @@ void Rasterizer::identifyLineSegment(std::array<Point, 3> points, std::vector<do
 
 Point Rasterizer::findZeroPoint(Point p1, Point p2)
 {
-    Point p((p2 - p1) * (0.0 - p1.value) / (p2.value - p1.value));
+    Point p(p1 + (p2 - p1) * (0.0 - p1.value) / (p2.value - p1.value));
     p.value = 0;
     return p;
 }

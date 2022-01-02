@@ -11,6 +11,7 @@
 #include "ExpressionParser.h"
 #include "StatementParser.h"
 #include "Rasterizer.h"
+#include <iostream>
 
 int main()
 {
@@ -18,11 +19,13 @@ int main()
 
     RegionRenderer regionRenderer;
     LineRenderer lineRenderer;
-
-    Plot plot(StatementParser().parse("y <= x * x").value(), 0.0, 2.0, 0.0, 2.0);
+    
+    auto statement = StatementParser().parse("x*x*x*x*x-4*x*x*x*x+8*x*x-0.4*x*x+1=y").value();
+    std::cout<<statement.getString() << std::endl;
+    Plot plot(StatementParser().parse("x*x*x*x*x-4*x*x*x*x+8*x*x-0.4*x*x+1=y").value(), -20.0, 20.0, -80.0, 80.0);
 
     Rasterizer rasterizer;
-    rasterizer.rasterize(plot, 1.0);
+    rasterizer.rasterize(plot, 0.05);
 
     regionRenderer.updateData(rasterizer.generateRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
     lineRenderer.updateData(rasterizer.generateLines());
