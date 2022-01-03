@@ -1,8 +1,11 @@
 #include "Program.h"
 
+std::function<void(int, int)> sizeChangeFunction;
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+    sizeChangeFunction(width, height);
 }
 
 Program& getProgram()
@@ -36,6 +39,43 @@ Program::Program()
 Program::~Program()
 {
     glfwTerminate();
+}
+
+bool Program::keyPressed(char c)
+{
+    if (glfwGetKey(window, c) == GLFW_PRESS && !keyState[c])
+    {
+        keyState[c] = true;
+        return true;
+    }
+    else
+    {
+        keyState[c] = false;
+        return false;
+    }
+}
+
+bool Program::mouseDragged()
+{
+    prevMouseX = mouseX;
+    prevMouseY = mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+    return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && mouseX != prevMouseX && mouseY != prevMouseY;
+}
+
+double Program::getMouseDeltaX()
+{
+    return mouseX - prevMouseX;
+}
+
+double Program::getMouseDeltaY()
+{
+    return mouseY - prevMouseY;
+}
+
+void Program::setOnWindowSizeChange(const std::function<void(int, int)>& f)
+{
+    sizeChangeFunction = f;
 }
 
 bool Program::shouldClose()
