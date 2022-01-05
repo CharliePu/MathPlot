@@ -2,7 +2,8 @@
 
 #include <stdexcept>
 
-Plot::Plot() : statement(), xmin(-10.0), xmax(10.0), ymin(-10.0), ymax(10.0), ratio(1.0)
+Plot::Plot() : statement(), xmin(-10.0), xmax(10.0), ymin(-10.0), ymax(10.0), ratio(1.0),
+offsetX(0), offsetY(0), scale(1.0)
 {
 
 }
@@ -57,20 +58,31 @@ bool Plot::empty()
 
 double Plot::getXMin()
 {
-	return xmin;
+	return xmin * scale + offsetX;
 }
 
 double Plot::getXMax()
 {
-	return xmax;
+	return xmax * scale + offsetX;
 }
 
 double Plot::getYMin()
 {
-	return ymin;
+	return ymin * scale + offsetY;
 }
 
 double Plot::getYMax()
 {
-	return ymax;
+	return ymax * scale + offsetY;
+}
+
+void Plot::move(double x, double y)
+{
+	offsetX -= scale * x;
+	offsetY += scale * y;
+}
+
+void Plot::zoom(double s)
+{
+	scale *= pow(1.5, s);
 }

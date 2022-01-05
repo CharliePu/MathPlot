@@ -21,6 +21,9 @@ public:
 	double getMouseDeltaX();
 	double getMouseDeltaY();
 
+	bool mouseScrolled();
+	double getMouseScroll();
+
 	int getWidth();
 	int getHeight();
 
@@ -30,6 +33,7 @@ public:
 private:
 	std::unordered_map<char, bool> keyState;
 	double prevMouseX, prevMouseY, mouseX, mouseY;
+
 	GLFWwindow* window;
 };
 
