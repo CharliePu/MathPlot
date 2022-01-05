@@ -2,10 +2,19 @@
 
 std::function<void(int, int)> sizeChangeFunction;
 
+bool scrolled;
+double scrollY;
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
     sizeChangeFunction(width, height);
+}
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    scrolled = true;
+    scrollY = yoffset;
 }
 
 Program& getProgram()
@@ -35,6 +44,8 @@ Program::Program()
     {
         
     }
+
+    glfwSetScrollCallback(window, scrollCallback);
 }
 
 Program::~Program()
@@ -72,6 +83,17 @@ double Program::getMouseDeltaX()
 double Program::getMouseDeltaY()
 {
     return mouseY - prevMouseY;
+}
+
+bool Program::mouseScrolled()
+{
+    return scrolled;
+}
+
+double Program::getMouseScroll()
+{
+    scrolled = false;
+    return scrollY;
 }
 
 int Program::getWidth()
