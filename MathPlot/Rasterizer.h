@@ -15,6 +15,7 @@ public:
 
 
 	std::vector<double> generateLines();
+	double normalize(double val, double min, double max);
 	void processRect(const std::array<Point, 4>& points, std::vector<double>& vertices);
 	void identifyLineSegment(std::array<Point, 3> points, std::vector<double>& vertices);
 	Point findZeroPoint(Point p1, Point p2);

@@ -29,6 +29,7 @@ Program::Program()
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+    glfwSwapInterval(1);
     
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
