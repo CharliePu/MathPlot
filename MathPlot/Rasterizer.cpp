@@ -4,31 +4,88 @@
 #include <algorithm>
 #include <iostream>
 
-void Rasterizer::rasterize(Plot plot, double step)
+Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this)
+{
+}
+
+Rasterizer::~Rasterizer()
+{
+    threadShouldClose = true;
+    thread.join();
+}
+
+void Rasterizer::rasterizeTask()
+{
+    while (!threadShouldClose)
+    {
+        if (requestReady && !dataReady)
+        {
+            requestReady = false;
+            rasterize(plot, xStep, yStep);
+            dataReady = true;
+        }
+    }
+}
+
+void Rasterizer::requestRasterize(Plot plot, double width, double height)
+{
+    if (plot.empty() || width <= 0 || height <= 0)
+    {
+        return;
+    }
+
+    this->plot = plot;
+    this->xStep = (plot.getXMax() - plot.getXMin()) / width;
+    this->yStep = (plot.getYMax() - plot.getYMin()) / height;
+    requestReady = true;
+}
+
+void Rasterizer::rasterize(Plot plot, double xStep, double yStep)
 {
     double xmin = plot.getXMin();
     double xmax = plot.getXMax();
     double ymin = plot.getYMin();
     double ymax = plot.getYMax();
 
-    this->plot = plot;
-
     auto expression = plot.getStatement().getExpression()->clone();
 
 	data.clear();
-    for (double y = ymin; y <= ymax; y += step)
+    for (double y = ymin; y <= ymax; y += yStep)
     {
         std::vector<Point> row;
-        for (double x = xmin; x <= xmax; x += step)
+        for (double x = xmin; x <= xmax; x += xStep)
         {
             row.emplace_back(x, y, 
                 static_cast<double>(expression->evaluate(x, y)));
         }
         data.emplace_back(row);
     }
+
+    generateLines();
+    generateRegions();
 }
 
-std::vector<double> Rasterizer::generateLines()
+bool Rasterizer::isDataReady()
+{
+    return dataReady;
+}
+
+void Rasterizer::closeData()
+{
+    dataReady = false;
+}
+
+std::vector<unsigned char> Rasterizer::getRegions()
+{
+    return regionData;
+}
+
+std::vector<double> Rasterizer::getLines()
+{
+    return lineData;
+}
+
+void Rasterizer::generateLines()
 {
     std::vector<double> vertices;
     for (size_t y = data.size() - 1; y > 0; y--)
@@ -44,7 +101,7 @@ std::vector<double> Rasterizer::generateLines()
         }
     }
     
-	return vertices;
+    lineData = vertices;
 }
 
 double Rasterizer::normalize(double val, double min, double max)
@@ -136,10 +193,10 @@ void Rasterizer::identifyLineSegment(std::array<Point, 3> points, std::vector<do
         }
     }
 
-    vertices.push_back(normalize(p1.x, plot->getXMin(), plot->getXMax()));
-    vertices.push_back(normalize(p1.y, plot->getYMin(), plot->getYMax()));
-    vertices.push_back(normalize(p2.x, plot->getXMin(), plot->getXMax()));
-    vertices.push_back(normalize(p2.y, plot->getYMin(), plot->getYMax()));
+    vertices.push_back(normalize(p1.x, plot.getXMin(), plot.getXMax()));
+    vertices.push_back(normalize(p1.y, plot.getYMin(), plot.getYMax()));
+    vertices.push_back(normalize(p2.x, plot.getXMin(), plot.getXMax()));
+    vertices.push_back(normalize(p2.y, plot.getYMin(), plot.getYMax()));
 }
 
 Point Rasterizer::findZeroPoint(Point p1, Point p2)
@@ -150,14 +207,9 @@ Point Rasterizer::findZeroPoint(Point p1, Point p2)
 }
 
 
-std::vector<unsigned char> Rasterizer::generateRegions()
+void Rasterizer::generateRegions()
 {
-    if (!plot.has_value())
-    {
-        return std::vector<unsigned char>();
-    }
-
-    auto comparator = plot->getStatement().getComparator();
+    auto comparator = plot.getStatement().getComparator();
 
     std::vector<std::vector<int>> pixels(data.size() - 1, std::vector<int>(data.front().size() - 1));
 
@@ -165,20 +217,20 @@ std::vector<unsigned char> Rasterizer::generateRegions()
     {
         for (size_t x = 0; x < data.front().size() - 1; x++)
         {
-            auto middleX = (data[y][x + 1].x + data[y][x].x) / 2.0, middleY = (data[y + 1][x].y + data[y][x].y) / 2.0;
-            auto middle = plot->getStatement().getExpression()->evaluate(middleX, middleY);
-            auto div = (data[y][x + 1].value + data[y][x].value - 2 * middle) / ((middleX - data[y][x].x) * (middleX - data[y][x].x))
-                + (data[y + 1][x].value + data[y][x].value - 2 * middle) / ((middleY - data[y][x].y) * (middleY - data[y][x].y));
+            //auto middleX = (data[y][x + 1].x + data[y][x].x) / 2.0, middleY = (data[y + 1][x].y + data[y][x].y) / 2.0;
+            //auto middle = plot->getStatement().getExpression()->evaluate(middleX, middleY);
+            //auto div = (data[y][x + 1].value + data[y][x].value - 2 * middle) / ((middleX - data[y][x].x) * (middleX - data[y][x].x))
+            //    + (data[y + 1][x].value + data[y][x].value - 2 * middle) / ((middleY - data[y][x].y) * (middleY - data[y][x].y));
 
-            auto average = (data[y][x].value + data[y][x + 1].value + data[y + 1][x + 1].value + data[y + 1][x].value) / 4.0;
-            auto averageDiff = (average - middle) * 256;
+            //auto average = (data[y][x].value + data[y][x + 1].value + data[y + 1][x + 1].value + data[y + 1][x].value) / 4.0;
+            //auto averageDiff = (average - middle) * 256;
 
-            auto max = std::max(data[y][x].value, std::max(data[y][x + 1].value, std::max(data[y + 1][x + 1].value, data[y + 1][x + 1].value)));
-            auto min = std::min(data[y][x].value, std::min(data[y][x + 1].value, std::min(data[y + 1][x + 1].value, data[y + 1][x + 1].value)));
-            
-            auto abnormal = middle >= max ? middle - max : (middle <= min ? min - middle : 0) * 255;
-            //std::cout << div << std::endl;
-            pixels[y][x] = std::min(255.0, std::max(-255.0, abnormal));
+            //auto max = std::max(data[y][x].value, std::max(data[y][x + 1].value, std::max(data[y + 1][x + 1].value, data[y + 1][x + 1].value)));
+            //auto min = std::min(data[y][x].value, std::min(data[y][x + 1].value, std::min(data[y + 1][x + 1].value, data[y + 1][x + 1].value)));
+            //
+            //auto abnormal = middle >= max ? middle - max : (middle <= min ? min - middle : 0) * 255;
+            //pixels[y][x] = std::min(255.0, std::max(-255.0, abnormal));
+            pixels[y][x] = (comparator(data[y][x].value, 0) && comparator(data[y + 1][x + 1].value, 0)) * 64;
         }
     }
 
@@ -199,7 +251,8 @@ std::vector<unsigned char> Rasterizer::generateRegions()
             flattenedPixel.push_back(0);
         }
     }
-	return flattenedPixel;
+	
+    regionData = flattenedPixel;
 }
 
 size_t Rasterizer::getRegionWidth()

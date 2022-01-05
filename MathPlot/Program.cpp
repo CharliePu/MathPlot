@@ -74,6 +74,20 @@ double Program::getMouseDeltaY()
     return mouseY - prevMouseY;
 }
 
+int Program::getWidth()
+{
+    int r;
+    glfwGetFramebufferSize(window, &r, nullptr);
+    return r;
+}
+
+int Program::getHeight()
+{
+    int r;
+    glfwGetFramebufferSize(window, nullptr, &r);
+    return r;
+}
+
 void Program::setOnWindowSizeChange(const std::function<void(int, int)>& f)
 {
     sizeChangeFunction = f;

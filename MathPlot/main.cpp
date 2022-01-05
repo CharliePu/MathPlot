@@ -47,27 +47,24 @@ int main()
     
     threadShouldClose = false;
     std::thread inputThread(concurrentInput);
-    long long fc = 0;
 
     program.setOnWindowSizeChange([&](int width, int height) {
         if (!plot.empty())
         {
             plot.setAspectRatio(width / static_cast<double>(height));
-            rasterizer.rasterize(plot, 0.01);
-
-            regionRenderer.updateData(rasterizer.generateRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
-            lineRenderer.updateData(rasterizer.generateLines());
+            rasterizer.requestRasterize(plot, width, height);
         }
         });
 
     while (!program.shouldClose())
     {
-        if (fc++ % 60 == 58 && currentStatement.has_value() && fc/60 <= 8) {
-            rasterizer.rasterize(plot, 20.0 / std::pow(2, fc/60));
-
-            regionRenderer.updateData(rasterizer.generateRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
-            lineRenderer.updateData(rasterizer.generateLines());
+        if (rasterizer.isDataReady())
+        {
+            regionRenderer.updateData(rasterizer.getRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
+            lineRenderer.updateData(rasterizer.getLines());
+            rasterizer.closeData();
         }
+
         regionRenderer.draw();
         lineRenderer.draw();
 
@@ -78,13 +75,9 @@ int main()
             {
                 plot.setStatement(*currentStatement);
 
-                rasterizer.rasterize(plot, 1.0);
-
-                regionRenderer.updateData(rasterizer.generateRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
-                lineRenderer.updateData(rasterizer.generateLines());
+                rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
             }
             dataReady = false;
-            fc = 0;
         }
 
         if (program.keyPressed('I'))
@@ -94,18 +87,19 @@ int main()
 
         if (program.mouseDragged())
         {
-            double deltaX = program.getMouseDeltaX();
-            double deltaY = program.getMouseDeltaY();
+            double deltaX = program.getMouseDeltaX(), deltaY = program.getMouseDeltaY();
+            //plot.move(program.getMouseDeltaX(), program.getMouseDeltaY());
             plot.setTargetXRange(plot.getXMin() - deltaX * 0.03, plot.getXMax() - deltaX * 0.03);
             plot.setTargetYRange(plot.getYMin() + deltaY * 0.03, plot.getYMax() + deltaY * 0.03);
 
-            rasterizer.rasterize(plot, 1.0);
-
-            regionRenderer.updateData(rasterizer.generateRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
-            lineRenderer.updateData(rasterizer.generateLines());
-            
-            fc = 0;
+            rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
         }
+        //if (program.mouseScrolled())
+        //{
+        //    plot.zoom(program.getMouseScroll());
+
+        //    rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
+        //}
     }
 
     threadShouldClose = true;

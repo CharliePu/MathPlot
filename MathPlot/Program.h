@@ -21,6 +21,9 @@ public:
 	double getMouseDeltaX();
 	double getMouseDeltaY();
 
+	int getWidth();
+	int getHeight();
+
 	void setOnWindowSizeChange(const std::function<void(int, int)>& f);
 
 	bool shouldClose();
