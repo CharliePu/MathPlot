@@ -72,7 +72,21 @@ bool Program::mouseDragged()
     prevMouseX = mouseX;
     prevMouseY = mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
+
+    mouseX /= getWidth();
+    mouseY /= getHeight();
+
     return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && mouseX != prevMouseX && mouseY != prevMouseY;
+}
+
+double Program::getMouseX()
+{
+    return mouseX;
+}
+
+double Program::getMouseY()
+{
+    return mouseY;
 }
 
 double Program::getMouseDeltaX()

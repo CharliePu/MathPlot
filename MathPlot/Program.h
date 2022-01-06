@@ -18,6 +18,8 @@ public:
 	bool keyPressed(char c);
 
 	bool mouseDragged();
+	double getMouseX();
+	double getMouseY();
 	double getMouseDeltaX();
 	double getMouseDeltaY();
 

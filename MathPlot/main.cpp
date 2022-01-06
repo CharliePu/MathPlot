@@ -87,13 +87,15 @@ int main()
 
         if (program.mouseDragged())
         {
-            plot.move(program.getMouseDeltaX() * 0.1, program.getMouseDeltaY() * 0.1);
+            plot.move(program.getMouseDeltaX() * (plot.getXMax() - plot.getXMin()), program.getMouseDeltaY() * (plot.getYMax() - plot.getYMin()));
 
             rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
         }
         if (program.mouseScrolled())
         {
-            plot.zoom(-program.getMouseScroll());
+            plot.zoom(plot.getXMin() + program.getMouseX() * (plot.getXMax() - plot.getXMin()), 
+                plot.getYMax() - program.getMouseY() * (plot.getYMax() - plot.getYMin()),
+                -program.getMouseScroll());
 
             rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
         }

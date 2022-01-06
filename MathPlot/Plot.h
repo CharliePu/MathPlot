@@ -24,11 +24,10 @@ public:
 	double getYMax();
 
 	void move(double x, double y);
-	void zoom(double s);
+	void zoom(double cx, double cy, double s);
 
 private:
 	std::optional<Statement> statement;
 	double xmin, xmax, ymin, ymax, ratio;
-	double offsetX, offsetY, scale;
 };
 
