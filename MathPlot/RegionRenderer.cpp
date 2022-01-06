@@ -30,12 +30,14 @@ RegionRenderer::RegionRenderer():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
 
+    transformLoc = glGetUniformLocation(shader, "transMat");
 }
 
 void RegionRenderer::draw()
 {
     shader.use();
     glBindTexture(GL_TEXTURE_2D, textureId);
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(getTransMat()));
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }

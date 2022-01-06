@@ -22,7 +22,10 @@ void Rasterizer::rasterizeTask()
         {
             requestReady = false;
             rasterize(plot, xStep, yStep);
-            dataReady = true;
+            if (!requestReady)
+            {
+                dataReady = true;
+            }
         }
     }
 }

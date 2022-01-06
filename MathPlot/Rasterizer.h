@@ -19,11 +19,9 @@ public:
 	std::vector<unsigned char> getRegions();
 	std::vector<double> getLines();
 
-	void generateRegions();
 	size_t getRegionWidth();
 	size_t getRegionHeight();
 
-	void generateLines();
 private:
 	void rasterize(Plot plot, double xStep, double yStep);
 
@@ -31,6 +29,9 @@ private:
 	void processRect(const std::array<Point, 4>& points, std::vector<double>& vertices);
 	void identifyLineSegment(std::array<Point, 3> points, std::vector<double>& vertices);
 	Point findZeroPoint(Point p1, Point p2);
+
+	void generateLines();
+	void generateRegions();
 
 	double xStep, yStep;
 	Plot plot;

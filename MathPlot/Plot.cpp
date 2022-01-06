@@ -85,7 +85,7 @@ void Plot::move(double x, double y)
 
 void Plot::zoom(double cx, double cy, double s)
 {
-	double scale = pow(1.5, s);
+	double scale = pow(1.1, s);
 	xmin = (xmin - cx) * scale + cx;
 	xmax = (xmax - cx) * scale + cx;
 	ymin = (ymin - cy) * scale + cy;

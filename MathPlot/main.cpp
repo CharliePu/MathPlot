@@ -60,6 +60,8 @@ int main()
     {
         if (rasterizer.isDataReady())
         {
+            lineRenderer.resetTransform();
+            regionRenderer.resetTransform();
             regionRenderer.updateData(rasterizer.getRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
             lineRenderer.updateData(rasterizer.getLines());
             rasterizer.closeData();
@@ -89,14 +91,19 @@ int main()
         {
             plot.move(program.getMouseDeltaX() * (plot.getXMax() - plot.getXMin()), program.getMouseDeltaY() * (plot.getYMax() - plot.getYMin()));
 
+            regionRenderer.move(program.getMouseDeltaX() * 2, -program.getMouseDeltaY() * 2);
+            lineRenderer.move(program.getMouseDeltaX() * 2, -program.getMouseDeltaY() * 2);
+
             rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
         }
         if (program.mouseScrolled())
         {
-            plot.zoom(plot.getXMin() + program.getMouseX() * (plot.getXMax() - plot.getXMin()), 
+            plot.zoom(plot.getXMin() + program.getMouseX() * (plot.getXMax() - plot.getXMin()),
                 plot.getYMax() - program.getMouseY() * (plot.getYMax() - plot.getYMin()),
                 -program.getMouseScroll());
 
+            regionRenderer.zoom(program.getMouseX() * 2 - 1, -program.getMouseY() * 2 + 1, program.getMouseScroll());
+            lineRenderer.zoom(program.getMouseX() * 2 - 1, -program.getMouseY() * 2 + 1, program.getMouseScroll());
             rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
         }
     }

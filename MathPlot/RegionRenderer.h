@@ -9,6 +9,6 @@ public:
     void updateData(const std::vector<unsigned char>& data, size_t width, size_t height);
 private:
     Shader shader;
-    unsigned int vao, vbo, textureId;
+    unsigned int vao, vbo, textureId, transformLoc;
 };
 
