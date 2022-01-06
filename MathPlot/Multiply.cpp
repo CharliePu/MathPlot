@@ -22,6 +22,11 @@ double Multiply::evaluate(double x, double y)
     return getFirstExpression()->evaluate(x, y) * getSecondExpression()->evaluate(x, y);
 }
 
+boost::numeric::interval<double> Multiply::evaluateInterval(const boost::numeric::interval<double>& xi, const boost::numeric::interval<double>& yi)
+{
+    return getFirstExpression()->evaluateInterval(xi, yi) * getSecondExpression()->evaluateInterval(xi, yi);
+}
+
 std::string Multiply::getString()
 {
     return getFirstExpression()->getString() + " * " + getSecondExpression()->getString();

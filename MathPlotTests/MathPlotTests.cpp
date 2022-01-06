@@ -15,6 +15,18 @@
 #include "Point.h"
 #include "Exponent.h"
 
+namespace Microsoft {
+	namespace VisualStudio {
+		namespace CppUnitTestFramework {
+			template <>
+			static std::wstring ToString<boost::numeric::interval<double>>(const boost::numeric::interval<double>& q)
+			{
+				return std::to_wstring(q.lower()) + L", " + std::to_wstring(q.upper());
+			}
+		}
+	}
+}
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace MathPlotTests
@@ -66,7 +78,7 @@ namespace MathPlotTests
 			}
 		}
 	};
-	TEST_CLASS(PointTEst)
+	TEST_CLASS(PointTest)
 	{
 	public:
 		TEST_METHOD(TestConstruction)
@@ -117,6 +129,19 @@ namespace MathPlotTests
 			auto exp2 = exp1->clone();
 
 			Assert::AreEqual(exp1->getString(), exp2->getString());
+		}
+		TEST_METHOD(TestEvaluteInterval)
+		{
+			ExpressionParser parser;
+			auto exp1 = parser.parse("2 + x");
+			auto interval = exp1->evaluateInterval({ 1, 5 }, { 0, 1 });
+			Assert::AreEqual(interval.lower(), 3.0);
+			Assert::AreEqual(interval.upper(), 7.0);
+
+			auto exp2 = parser.parse("(3 + y) * x");
+			auto interval2 = exp2->evaluateInterval({ 0, 5 }, { 0, 1 });
+			Assert::AreEqual(interval2.lower(), 0.0);
+			Assert::AreEqual(interval2.upper(), 20.0);
 		}
 	};
 	TEST_CLASS(ExpressionParserTest)
@@ -375,6 +400,7 @@ namespace MathPlotTests
 				Assert::AreEqual(exp3.evaluate(3.0, -2.0), std::pow(-2.0, 3.0));
 			}
 		}
+
 		TEST_METHOD(TestClone)
 		{
 			auto c1 = std::make_unique<Constant>(2);

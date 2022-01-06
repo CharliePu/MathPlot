@@ -16,6 +16,11 @@ double Constant::evaluate(double x, double y)
     return c;
 }
 
+boost::numeric::interval<double> Constant::evaluateInterval(const boost::numeric::interval<double>& xi, const boost::numeric::interval<double>& yi)
+{
+    return boost::numeric::interval<double>(c);
+}
+
 std::string Constant::getString()
 {
     std::ostringstream ss;
