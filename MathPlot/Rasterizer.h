@@ -8,12 +8,11 @@
 
 class Rasterizer
 {
-	using Interval = boost::numeric::interval<double>;
 public:
 	Rasterizer();
 	~Rasterizer();
 
-	void requestRasterize(Plot plot, double width, double height);
+	void requestRasterize(Plot plot, int width, int height);
 
 	bool isDataReady();
 	void closeData();
@@ -40,10 +39,11 @@ private:
 
 	std::atomic_bool requestReady, dataReady, threadShouldClose;
 
+	int width, height;
 	double xStep, yStep;
 	Plot plot;
-
-	double requestXStep, requestYStep;
+	
+	int requestWidth, requestHeight;
 	Plot requestPlot;
 
 	std::vector<std::vector<Point>> map;

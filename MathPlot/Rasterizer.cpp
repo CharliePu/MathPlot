@@ -24,8 +24,10 @@ void Rasterizer::rasterizeTask()
             requestReady = false;
 
             plot = requestPlot;
-            xStep = requestXStep;
-            yStep = requestYStep;
+            width = requestWidth;
+            height = requestHeight;
+            xStep = plot.getWidth() / static_cast<double>(width);
+            yStep = plot.getHeight() / static_cast<double>(height);
 
             rasterize();
             if (!requestReady)
@@ -36,7 +38,7 @@ void Rasterizer::rasterizeTask()
     }
 }
 
-void Rasterizer::requestRasterize(Plot plot, double width, double height)
+void Rasterizer::requestRasterize(Plot plot, int width, int height)
 {
     if (plot.empty() || width <= 0 || height <= 0)
     {
@@ -44,8 +46,8 @@ void Rasterizer::requestRasterize(Plot plot, double width, double height)
     }
 
     requestPlot = plot;
-    requestXStep = plot.getWidth() / width;
-    requestYStep = plot.getHeight() / height;
+    requestWidth = width;
+    requestHeight = height;
     requestReady = true;
 }
 
@@ -61,6 +63,7 @@ void Rasterizer::rasterize()
 
     auto expression = plot.getStatement().getExpression();
     auto certaintyCheck = plot.getStatement().getIntervalCertaintyChecker();
+    auto comparator = plot.getStatement().getComparator();
 
     xiQueue.push(Interval(plot.getXMin(), plot.getXMax()));
     yiQueue.push(Interval(plot.getYMin(), plot.getYMax()));
@@ -74,23 +77,30 @@ void Rasterizer::rasterize()
         auto& yi = yiQueue.front();
 
         node = std::make_unique<SampleTreeNode>();
+        node->xi = xi;
+        node->yi = yi;
 
         bool xLimReached = (xi.upper() - xi.lower()) <= xStep;
         bool yLimReached = (yi.upper() - yi.lower()) <= yStep;
 
         sampleMap.fill(xi, yi);
 
+        double midX = (xi.lower() + xi.upper()) / 2.0;
+        double midY = (yi.lower() + yi.upper()) / 2.0;
+
         if (certaintyCheck(expression->evaluateInterval(xi, yi)) || (xLimReached && yLimReached))
         {
+            node->determinedState = comparator(expression->evaluate(midX, midY), 0);
             node->sample = sampleMap.getSamplePoints(xi, yi);
             samples.push_back(node->sample);
         }
         else
         {
-            double midX = (xi.lower() + xi.upper()) / 2.0;
-            double midY = (yi.lower() + yi.upper()) / 2.0;
             if (xLimReached)
             {
+                node->xSplit = false;
+                node->ySplit = true;
+
                 node->nodes.push_back(nullptr);
                 xiQueue.push(xi);
                 yiQueue.emplace(yi.lower(), midY);
@@ -104,6 +114,9 @@ void Rasterizer::rasterize()
             }
             else if (yLimReached)
             {
+                node->xSplit = true;
+                node->ySplit = false;
+
                 node->nodes.push_back(nullptr);
                 xiQueue.emplace(xi.lower(), midX);
                 yiQueue.push(yi);
@@ -117,6 +130,9 @@ void Rasterizer::rasterize()
             }
             else
             {
+                node->xSplit = true;
+                node->ySplit = true;
+
                 node->nodes.push_back(nullptr);
                 xiQueue.emplace(xi.lower(), midX);
                 yiQueue.emplace(yi.lower(), midY);
@@ -305,16 +321,11 @@ void Rasterizer::generateRegions()
 
     std::vector<unsigned char> pixels;
     pixels.reserve((map.size() - 1) * (map.front().size() - 1));
-    for (int i = 0; i < map.size() - 1; i++)
+    for (int y = height - 1; y >= 0; y--)
     {
-        for (int j = 0; j < map.front().size() - 1; j++)
+        for (int x = 0; x < width; x++)
         {
-            auto valid = 
-                comparator(map[i][j].value, 0) &&
-                comparator(map[i][j + 1].value, 0) &&
-                comparator(map[i + 1][j].value, 0) &&
-                comparator(map[i + 1][j + 1].value, 0);
-            pixels.push_back(valid ? 255 : 0);
+            pixels.push_back(sampleTree.check(plot.getXMin() + (x + 0.5) * xStep, plot.getYMin() + (y + 0.5) * yStep) ? 255 : 0);
             pixels.push_back(0);
             pixels.push_back(0);
         }
@@ -331,10 +342,10 @@ void Rasterizer::generateRegions()
 
 size_t Rasterizer::getRegionWidth()
 {
-    return sampleMap.getMap().front().size() - 1;
+    return width;
 }
 
 size_t Rasterizer::getRegionHeight()
 {
-    return sampleMap.getMap().size() - 1;
+    return height;
 }

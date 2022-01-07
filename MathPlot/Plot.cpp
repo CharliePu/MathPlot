@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 
-Plot::Plot() : statement(), xmin(-10.0), xmax(10.0), ymin(-10.0), ymax(10.0), ratio(1.0)
+Plot::Plot() : statement(), xmin(-10.0), xmax(10.0), ymin(-20.0), ymax(0.0), ratio(1.0)
 {
 
 }
