@@ -11,6 +11,7 @@
 #include "Subtract.h"
 #include "ExpressionParser.h"
 #include "StatementParser.h"
+#include "SampleTree.h"
 #include "Rasterizer.h"
 #include <iostream>
 #include <atomic>
@@ -44,6 +45,7 @@ int main()
     std::optional<Statement> currentStatement;
     Plot plot;
 
+
     
     threadShouldClose = false;
     std::thread inputThread(concurrentInput);
@@ -51,8 +53,11 @@ int main()
     program.setOnWindowSizeChange([&](int width, int height) {
         if (!plot.empty())
         {
-            plot.setAspectRatio(width / static_cast<double>(height));
-            rasterizer.requestRasterize(plot, width, height);
+            if (width > 0 && height > 0)
+            {
+                plot.setAspectRatio(width / static_cast<double>(height));
+                rasterizer.requestRasterize(plot, width, height);
+            }
         }
         });
 

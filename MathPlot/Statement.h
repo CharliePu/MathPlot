@@ -21,8 +21,9 @@ public:
 	Statement(const Statement &other);
 	Statement &operator=(Statement other);
 
-	std::unique_ptr<Expression> getExpression();
-	std::function<bool(double, double)> getComparator();
+	std::unique_ptr<Expression> getExpression() const;
+	std::function<bool(double, double)> getComparator() const;
+	std::function<bool(boost::numeric::interval<double>)> getIntervalCertaintyChecker() const;
 	bool evaluate(double x, double y);
 	std::string getString();
 

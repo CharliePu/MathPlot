@@ -109,6 +109,15 @@
       <Filter>Source Files\Expressions\Operators</Filter>
     </ClCompile>
     <ClCompile Include="Absolute.cpp">
+      <Filter>Source Files\Expressions\Operators</Filter>
+    </ClCompile>
+    <ClCompile Include="SampleTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SampleMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -180,6 +189,15 @@
       <Filter>Header Files\Expressions\Operators</Filter>
     </ClInclude>
     <ClInclude Include="Absolute.h">
+      <Filter>Header Files\Expressions\Operators</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sample.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

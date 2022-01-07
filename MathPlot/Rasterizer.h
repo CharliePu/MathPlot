@@ -1,12 +1,14 @@
 #pragma once
-#include <optional>
 #include <thread>
 #include "Plot.h"
 
 #include "Point.h"
+#include "SampleMap.h"
+#include "SampleTree.h"
 
 class Rasterizer
 {
+	using Interval = boost::numeric::interval<double>;
 public:
 	Rasterizer();
 	~Rasterizer();
@@ -23,25 +25,35 @@ public:
 	size_t getRegionHeight();
 
 private:
-	void rasterize(Plot plot, double xStep, double yStep);
+	void rasterizeTask();
 
-	double normalize(double val, double min, double max);
-	void processRect(const std::array<Point, 4>& points, std::vector<double>& vertices);
-	void identifyLineSegment(std::array<Point, 3> points, std::vector<double>& vertices);
-	Point findZeroPoint(Point p1, Point p2);
+	void rasterize();
 
 	void generateLines();
 	void generateRegions();
 
+	double normalize(double val, double min, double max);
+	void processRect(const std::array<Point*, 4>& points, std::vector<double>& vertices);
+	void identifyLineSegment(std::array<Point*, 3> points, std::vector<double>& vertices);
+	Point findZeroPoint(Point* p1, Point* p2);
+
+
+	std::atomic_bool requestReady, dataReady, threadShouldClose;
+
 	double xStep, yStep;
 	Plot plot;
-	std::vector<std::vector<Point>> data;
+
+	double requestXStep, requestYStep;
+	Plot requestPlot;
+
+	std::vector<std::vector<Point>> map;
+	SampleTree sampleTree;
+	SampleMap sampleMap;
 
 	std::thread thread;
 
-	void rasterizeTask();
-	std::atomic_bool requestReady, dataReady, threadShouldClose;
-
 	std::vector<unsigned char> regionData;
 	std::vector<double> lineData;
+
+	std::vector<Sample> samples;
 };

@@ -25,12 +25,12 @@ Statement& Statement::operator=(Statement other)
 	return *this;
 }
 
-std::unique_ptr<Expression> Statement::getExpression()
+std::unique_ptr<Expression> Statement::getExpression() const
 {
 	return std::make_unique<Subtract>(lhs->clone(), rhs->clone());
 }
 
-std::function<bool(double, double)> Statement::getComparator()
+std::function<bool(double, double)> Statement::getComparator() const
 {
 	switch (relation)
 	{
@@ -46,6 +46,29 @@ std::function<bool(double, double)> Statement::getComparator()
 		return std::greater_equal<double>();
 	default:
 		return [](double, double) {return true; };
+	}
+}
+
+std::function<bool(boost::numeric::interval<double>)> Statement::getIntervalCertaintyChecker() const
+{
+	switch (relation)
+	{
+	case Relation::equal:
+		return [](boost::numeric::interval<double> i) {
+			return i.lower() == 0 && i.upper() == 0;
+		};
+	case Relation::less:
+	case Relation::greater:
+		return [](boost::numeric::interval<double> i) {
+			return i.upper() < 0 || i.lower() > 0;
+		};
+	case Relation::lessEqual:
+	case Relation::greaterEqual:
+		return [](boost::numeric::interval<double> i) {
+			return i.upper() <= 0 || i.lower() >= 0;
+		};
+	default:
+		return [](boost::numeric::interval<double> i) { return false; };
 	}
 }
 

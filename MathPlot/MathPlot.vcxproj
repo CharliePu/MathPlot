@@ -157,6 +157,9 @@
     <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="RegionRenderer.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Sample.cpp" />
+    <ClCompile Include="SampleMap.cpp" />
+    <ClCompile Include="SampleTree.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Statement.cpp" />
     <ClCompile Include="StatementParser.cpp" />
@@ -182,6 +185,9 @@
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="RegionRenderer.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Sample.h" />
+    <ClInclude Include="SampleMap.h" />
+    <ClInclude Include="SampleTree.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Statement.h" />
     <ClInclude Include="StatementParser.h" />

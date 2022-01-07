@@ -3,8 +3,9 @@
 #include <array>
 #include <algorithm>
 #include <iostream>
+#include <queue>
 
-Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this)
+Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this), xStep(1.0), yStep(1.0)
 {
 }
 
@@ -21,7 +22,12 @@ void Rasterizer::rasterizeTask()
         if (requestReady && !dataReady)
         {
             requestReady = false;
-            rasterize(plot, xStep, yStep);
+
+            plot = requestPlot;
+            xStep = requestXStep;
+            yStep = requestYStep;
+
+            rasterize();
             if (!requestReady)
             {
                 dataReady = true;
@@ -37,31 +43,106 @@ void Rasterizer::requestRasterize(Plot plot, double width, double height)
         return;
     }
 
-    this->plot = plot;
-    this->xStep = (plot.getXMax() - plot.getXMin()) / width;
-    this->yStep = (plot.getYMax() - plot.getYMin()) / height;
+    requestPlot = plot;
+    requestXStep = plot.getWidth() / width;
+    requestYStep = plot.getHeight() / height;
     requestReady = true;
 }
 
-void Rasterizer::rasterize(Plot plot, double xStep, double yStep)
+void Rasterizer::rasterize()
 {
-    double xmin = plot.getXMin();
-    double xmax = plot.getXMax();
-    double ymin = plot.getYMin();
-    double ymax = plot.getYMax();
+    sampleMap.construct(plot, xStep, yStep);
+    sampleTree = SampleTree();
 
-    auto expression = plot.getStatement().getExpression()->clone();
+    samples.clear();
 
-	data.clear();
-    for (double y = ymin; y <= ymax; y += yStep)
+    std::queue<Interval> xiQueue, yiQueue;
+    std::queue<std::unique_ptr<SampleTreeNode>*> nodeQueue;
+
+    auto expression = plot.getStatement().getExpression();
+    auto certaintyCheck = plot.getStatement().getIntervalCertaintyChecker();
+
+    xiQueue.push(Interval(plot.getXMin(), plot.getXMax()));
+    yiQueue.push(Interval(plot.getYMin(), plot.getYMax()));
+
+    nodeQueue.push(&sampleTree.root);
+
+    while (!nodeQueue.empty())
     {
-        std::vector<Point> row;
-        for (double x = xmin; x <= xmax; x += xStep)
+        auto& node = *nodeQueue.front();
+        auto& xi = xiQueue.front();
+        auto& yi = yiQueue.front();
+
+        node = std::make_unique<SampleTreeNode>();
+
+        bool xLimReached = (xi.upper() - xi.lower()) <= xStep;
+        bool yLimReached = (yi.upper() - yi.lower()) <= yStep;
+
+        sampleMap.fill(xi, yi);
+
+        if (certaintyCheck(expression->evaluateInterval(xi, yi)) || (xLimReached && yLimReached))
         {
-            row.emplace_back(x, y, 
-                static_cast<double>(expression->evaluate(x, y)));
+            node->sample = sampleMap.getSamplePoints(xi, yi);
+            samples.push_back(node->sample);
         }
-        data.emplace_back(row);
+        else
+        {
+            double midX = (xi.lower() + xi.upper()) / 2.0;
+            double midY = (yi.lower() + yi.upper()) / 2.0;
+            if (xLimReached)
+            {
+                node->nodes.push_back(nullptr);
+                xiQueue.push(xi);
+                yiQueue.emplace(yi.lower(), midY);
+
+                node->nodes.push_back(nullptr);
+                xiQueue.push(xi);
+                yiQueue.emplace(midY, yi.upper());
+
+                nodeQueue.push(&node->nodes[0]);
+                nodeQueue.push(&node->nodes[1]);
+            }
+            else if (yLimReached)
+            {
+                node->nodes.push_back(nullptr);
+                xiQueue.emplace(xi.lower(), midX);
+                yiQueue.push(yi);
+
+                node->nodes.push_back(nullptr);
+                xiQueue.emplace(midX, xi.upper());
+                yiQueue.push(yi);
+
+                nodeQueue.push(&node->nodes[0]);
+                nodeQueue.push(&node->nodes[1]);
+            }
+            else
+            {
+                node->nodes.push_back(nullptr);
+                xiQueue.emplace(xi.lower(), midX);
+                yiQueue.emplace(yi.lower(), midY);
+
+                node->nodes.push_back(nullptr);
+                xiQueue.emplace(midX, xi.upper());
+                yiQueue.emplace(yi.lower(), midY);
+
+                node->nodes.push_back(nullptr);
+                xiQueue.emplace(xi.lower(), midX);
+                yiQueue.emplace(midY, yi.upper());
+
+                node->nodes.push_back(nullptr);
+                xiQueue.emplace(midX, xi.upper());
+                yiQueue.emplace(midY, yi.upper());
+
+                nodeQueue.push(&node->nodes[0]);
+                nodeQueue.push(&node->nodes[1]);
+                nodeQueue.push(&node->nodes[2]);
+                nodeQueue.push(&node->nodes[3]);
+            }
+        }
+
+        nodeQueue.pop();
+        xiQueue.pop();
+        yiQueue.pop();
     }
 
     generateLines();
@@ -91,18 +172,22 @@ std::vector<double> Rasterizer::getLines()
 void Rasterizer::generateLines()
 {
     std::vector<double> vertices;
-    for (size_t y = data.size() - 1; y > 0; y--)
+    for (auto& sample : samples)
     {
-        for (size_t x = 0; x < data.front().size() - 1; x++)
-        {
-            processRect({
-                data[y][x],
-                data[y][x + 1],
-                data[y - 1][x],
-                data[y - 1][x + 1]
-                }, vertices);
-        }
+        processRect(sample.points, vertices);
     }
+    //for (size_t y = data.size() - 1; y > 0; y--)
+    //{
+    //    for (size_t x = 0; x < data.front().size() - 1; x++)
+    //    {
+    //        processRect({
+    //            data[y][x],
+    //            data[y][x + 1],
+    //            data[y - 1][x],
+    //            data[y - 1][x + 1]
+    //            }, vertices);
+    //    }
+    //}
     
     lineData = vertices;
 }
@@ -112,43 +197,46 @@ double Rasterizer::normalize(double val, double min, double max)
     return (val - min) / (max - min) * 2.0 - 1.0;
 }
 
-void Rasterizer::processRect(const std::array<Point, 4>& points, std::vector<double>& vertices)
+void Rasterizer::processRect(const std::array<Point*, 4>& points, std::vector<double>& vertices)
 {
     double average = 0;
     for (auto& point : points)
     {
-        average += point.value;
+        average += point->value;
     }
     average /= points.size();
 
     Point center(
-        (points[0].x + points[1].x) / 2.0,
-        (points[0].y + points[2].y) / 2.0,
+        (points[0]->x + points[1]->x) / 2.0,
+        (points[0]->y + points[2]->y) / 2.0,
         average);
 
-    identifyLineSegment({ points[0], points[1], center }, vertices);
-    identifyLineSegment({ center, points[1], points[3] }, vertices);
-    identifyLineSegment({ center, points[3], points[2] }, vertices);
-    identifyLineSegment({ points[0], center, points[2] }, vertices);
+    identifyLineSegment({ points[0], points[1], &center }, vertices);
+    identifyLineSegment({ &center, points[1], points[3] }, vertices);
+    identifyLineSegment({ &center, points[3], points[2] }, vertices);
+    identifyLineSegment({ points[0], &center, points[2] }, vertices);
 }
 
-void Rasterizer::identifyLineSegment(std::array<Point, 3> points, std::vector<double>& vertices)
+void Rasterizer::identifyLineSegment(std::array<Point*, 3> points, std::vector<double>& vertices)
 {
-    std::sort(points.begin(), points.end());
+    std::sort(points.begin(), points.end(), [](Point *ptr1, Point *ptr2)
+    {
+            return ptr1->value < ptr2->value;
+    });
 
 
     size_t onPointIndex = 0, abovePointIndex = 0, belowPointIndex = 0;
     size_t belowCount = 0, onCount = 0, aboveCount = 0;
 
     int i = 0;
-    while (i < points.size() && points[i].value < 0)
+    while (i < points.size() && points[i]->value < 0)
     {
         i++;
         belowCount++;
     }
 
     onPointIndex = i;
-    while (i < points.size() && points[i].value == 0)
+    while (i < points.size() && points[i]->value == 0)
     {
         i++;
         onCount++;
@@ -171,14 +259,14 @@ void Rasterizer::identifyLineSegment(std::array<Point, 3> points, std::vector<do
 
     if (onCount == 2)
     {
-        p1 = points[onPointIndex];
-        p2 = points[onPointIndex + 1];
+        p1 = *points[onPointIndex];
+        p2 = *points[onPointIndex + 1];
     }
 
     if (onCount == 1 && aboveCount == 1 && belowCount == 1)
     {
         p1 = findZeroPoint(points[abovePointIndex], points[belowPointIndex]);
-        p2 = points[onPointIndex];
+        p2 = *points[onPointIndex];
     }
 
     if (onCount == 0)
@@ -202,9 +290,9 @@ void Rasterizer::identifyLineSegment(std::array<Point, 3> points, std::vector<do
     vertices.push_back(normalize(p2.y, plot.getYMin(), plot.getYMax()));
 }
 
-Point Rasterizer::findZeroPoint(Point p1, Point p2)
+Point Rasterizer::findZeroPoint(Point *p1, Point *p2)
 {
-    Point p(p1 + (p2 - p1) * (0.0 - p1.value) / (p2.value - p1.value));
+    Point p(*p1 + (*p2 - *p1) * (0.0 - p1->value) / (p2->value - p1->value));
     p.value = 0;
     return p;
 }
@@ -213,57 +301,40 @@ Point Rasterizer::findZeroPoint(Point p1, Point p2)
 void Rasterizer::generateRegions()
 {
     auto comparator = plot.getStatement().getComparator();
+    auto map = sampleMap.getMap();
 
-    std::vector<std::vector<int>> pixels(data.size() - 1, std::vector<int>(data.front().size() - 1));
-
-    for (size_t y = 0; y < data.size() - 1; y++)
+    std::vector<unsigned char> pixels;
+    pixels.reserve((map.size() - 1) * (map.front().size() - 1));
+    for (int i = 0; i < map.size() - 1; i++)
     {
-        for (size_t x = 0; x < data.front().size() - 1; x++)
+        for (int j = 0; j < map.front().size() - 1; j++)
         {
-            //auto middleX = (data[y][x + 1].x + data[y][x].x) / 2.0, middleY = (data[y + 1][x].y + data[y][x].y) / 2.0;
-            //auto middle = plot->getStatement().getExpression()->evaluate(middleX, middleY);
-            //auto div = (data[y][x + 1].value + data[y][x].value - 2 * middle) / ((middleX - data[y][x].x) * (middleX - data[y][x].x))
-            //    + (data[y + 1][x].value + data[y][x].value - 2 * middle) / ((middleY - data[y][x].y) * (middleY - data[y][x].y));
-
-            //auto average = (data[y][x].value + data[y][x + 1].value + data[y + 1][x + 1].value + data[y + 1][x].value) / 4.0;
-            //auto averageDiff = (average - middle) * 256;
-
-            //auto max = std::max(data[y][x].value, std::max(data[y][x + 1].value, std::max(data[y + 1][x + 1].value, data[y + 1][x + 1].value)));
-            //auto min = std::min(data[y][x].value, std::min(data[y][x + 1].value, std::min(data[y + 1][x + 1].value, data[y + 1][x + 1].value)));
-            //
-            //auto abnormal = middle >= max ? middle - max : (middle <= min ? min - middle : 0) * 255;
-            //pixels[y][x] = std::min(255.0, std::max(-255.0, abnormal));
-            pixels[y][x] = (comparator(data[y][x].value, 0) && comparator(data[y + 1][x + 1].value, 0)) * 64;
-        }
-    }
-
-    std::vector<unsigned char> flattenedPixel;
-    flattenedPixel.reserve(pixels.size() * pixels.front().size());
-    for (int i = 0; i < pixels.size(); i++)
-    {
-        for (int j = 0; j < pixels.front().size(); j++)
-        {
-            flattenedPixel.push_back(pixels[i][j] > 0 ? pixels[i][j] : 0);
-            flattenedPixel.push_back(pixels[i][j] < 0 ? -pixels[i][j] : 0);
-            flattenedPixel.push_back(0);
+            auto valid = 
+                comparator(map[i][j].value, 0) &&
+                comparator(map[i][j + 1].value, 0) &&
+                comparator(map[i + 1][j].value, 0) &&
+                comparator(map[i + 1][j + 1].value, 0);
+            pixels.push_back(valid ? 255 : 0);
+            pixels.push_back(0);
+            pixels.push_back(0);
         }
 
         // 4-byte alignment
-        while (flattenedPixel.size() % 4 != 0)
+        while (pixels.size() % 4 != 0)
         {
-            flattenedPixel.push_back(0);
+            pixels.push_back(0);
         }
     }
 	
-    regionData = flattenedPixel;
+    regionData = pixels;
 }
 
 size_t Rasterizer::getRegionWidth()
 {
-    return data.front().size() - 1;
+    return sampleMap.getMap().front().size() - 1;
 }
 
 size_t Rasterizer::getRegionHeight()
 {
-    return data.size() - 1;
+    return sampleMap.getMap().size() - 1;
 }
