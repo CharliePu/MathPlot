@@ -149,6 +149,7 @@
     <ClCompile Include="Exponent.cpp" />
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="ExpressionParser.cpp" />
+    <ClCompile Include="Interval.cpp" />
     <ClCompile Include="LineRenderer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Plot.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Exponent.h" />
     <ClInclude Include="Expression.h" />
     <ClInclude Include="ExpressionParser.h" />
+    <ClInclude Include="Interval.h" />
     <ClInclude Include="LineRenderer.h" />
     <ClInclude Include="Plot.h" />
     <ClInclude Include="Point.h" />

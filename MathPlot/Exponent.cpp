@@ -23,11 +23,9 @@ double Exponent::evaluate(double x, double y)
     return std::pow(getFirstExpression()->evaluate(x, y), getSecondExpression()->evaluate(x, y));
 }
 
-boost::numeric::interval<double> Exponent::evaluateInterval(const boost::numeric::interval<double>& xi, const boost::numeric::interval<double>& yi)
+Interval Exponent::evaluateInterval(const Interval& xi, const Interval& yi)
 {
-    return boost::numeric::interval<double>(
-        std::pow(getFirstExpression()->evaluateInterval(xi, yi).lower(), getSecondExpression()->evaluateInterval(xi, yi).lower()),
-        std::pow(getFirstExpression()->evaluateInterval(xi, yi).upper(), getSecondExpression()->evaluateInterval(xi, yi).upper()));
+    return boost::numeric::exp(getFirstExpression()->evaluateInterval(xi, yi) * boost::numeric::log(getSecondExpression()->evaluateInterval(xi, yi)));
 }
 
 std::string Exponent::getString()
