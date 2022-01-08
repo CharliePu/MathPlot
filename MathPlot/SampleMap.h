@@ -11,8 +11,8 @@ public:
 	SampleMap();
 	Point& get(double x, double y);
 	std::vector<std::vector<Point>>& getMap();
-	void fill(const boost::numeric::interval<double>& xi, const boost::numeric::interval<double>& yi);
-	Sample getSamplePoints(const boost::numeric::interval<double>& xi, const boost::numeric::interval<double>& yi);
+	void fill(const Interval& xi, const Interval& yi);
+	Sample getSamplePoints(const Interval& xi, const Interval& yi);
 	void construct(const Plot& plot, double xStep, double yStep);
 
 private:

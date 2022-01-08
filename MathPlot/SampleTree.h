@@ -7,6 +7,7 @@
 #include "Expression.h"
 #include "Plot.h"
 #include "Sample.h"
+#include "Interval.h"
 
 struct SampleTreeNode
 {

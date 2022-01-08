@@ -49,26 +49,23 @@ std::function<bool(double, double)> Statement::getComparator() const
 	}
 }
 
-std::function<bool(boost::numeric::interval<double>)> Statement::getIntervalCertaintyChecker() const
+std::function<bool(Interval)> Statement::getIntervalCertaintyChecker() const
 {
 	switch (relation)
 	{
 	case Relation::equal:
-		return [](boost::numeric::interval<double> i) {
-			return i.lower() == 0 && i.upper() == 0;
-		};
 	case Relation::less:
 	case Relation::greater:
-		return [](boost::numeric::interval<double> i) {
-			return i.upper() < 0 || i.lower() > 0;
+		return [](Interval i) {
+			return (i.lower() == 0.0 && i.upper() == 0.0) || i.upper() < 0 || i.lower() > 0;
 		};
 	case Relation::lessEqual:
 	case Relation::greaterEqual:
-		return [](boost::numeric::interval<double> i) {
+		return [](Interval i) {
 			return i.upper() <= 0 || i.lower() >= 0;
 		};
 	default:
-		return [](boost::numeric::interval<double> i) { return false; };
+		return [](Interval i) { return false; };
 	}
 }
 

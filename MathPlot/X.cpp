@@ -10,7 +10,7 @@ double X::evaluate(double x, double y)
     return x;
 }
 
-boost::numeric::interval<double> X::evaluateInterval(const boost::numeric::interval<double>& xi, const boost::numeric::interval<double>& yi)
+Interval X::evaluateInterval(const Interval& xi, const Interval& yi)
 {
     return xi;
 }

@@ -15,7 +15,7 @@ std::vector<std::vector<Point>>& SampleMap::getMap()
 	return map;
 }
 
-void SampleMap::fill(const boost::numeric::interval<double>& xi, const boost::numeric::interval<double>& yi)
+void SampleMap::fill(const Interval& xi, const Interval& yi)
 {
 	double bl = expression->evaluate(xi.lower(), yi.lower());
 	double br = expression->evaluate(xi.upper(), yi.lower());
@@ -42,8 +42,8 @@ void SampleMap::fill(const boost::numeric::interval<double>& xi, const boost::nu
 
 }
 
-Sample SampleMap::getSamplePoints(const boost::numeric::interval<double>& xi,
-	const boost::numeric::interval<double>& yi)
+Sample SampleMap::getSamplePoints(const Interval& xi,
+                                  const Interval& yi)
 {
 	Sample sample;
 	sample.points = {

@@ -22,7 +22,7 @@ double Absolute::evaluate(double x, double y)
     return std::abs(getFirstExpression()->evaluate(x, y));
 }
 
-boost::numeric::interval<double> Absolute::evaluateInterval(const boost::numeric::interval<double>& xi, const boost::numeric::interval<double>& yi)
+Interval Absolute::evaluateInterval(const Interval& xi, const Interval& yi)
 {
     return boost::numeric::abs(getFirstExpression()->evaluateInterval(xi, yi));
 }

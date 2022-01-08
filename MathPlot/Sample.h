@@ -4,8 +4,6 @@
 
 #include "Point.h"
 
-using Interval = boost::numeric::interval<double>;
-
 struct Sample
 {
 	std::array<Point*, 4> points;

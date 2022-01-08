@@ -23,7 +23,7 @@ public:
 
 	std::unique_ptr<Expression> getExpression() const;
 	std::function<bool(double, double)> getComparator() const;
-	std::function<bool(boost::numeric::interval<double>)> getIntervalCertaintyChecker() const;
+	std::function<bool(Interval)> getIntervalCertaintyChecker() const;
 	bool evaluate(double x, double y);
 	std::string getString();
 

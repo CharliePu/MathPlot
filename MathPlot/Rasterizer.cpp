@@ -87,8 +87,9 @@ void Rasterizer::rasterize()
 
         double midX = (xi.lower() + xi.upper()) / 2.0;
         double midY = (yi.lower() + yi.upper()) / 2.0;
-
-        if (certaintyCheck(expression->evaluateInterval(xi, yi)) || (xLimReached && yLimReached))
+        auto b = expression->evaluateInterval(xi, yi);
+        auto b1 = certaintyCheck(b);
+        if (empty(b) || b1 || (xLimReached && yLimReached))
         {
             node->determinedState = comparator(expression->evaluate(midX, midY), 0);
             node->sample = sampleMap.getSamplePoints(xi, yi);

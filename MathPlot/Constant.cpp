@@ -16,9 +16,9 @@ double Constant::evaluate(double x, double y)
     return c;
 }
 
-boost::numeric::interval<double> Constant::evaluateInterval(const boost::numeric::interval<double>& xi, const boost::numeric::interval<double>& yi)
+Interval Constant::evaluateInterval(const Interval& xi, const Interval& yi)
 {
-    return boost::numeric::interval<double>(c);
+    return Interval(c);
 }
 
 std::string Constant::getString()
