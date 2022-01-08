@@ -31,3 +31,15 @@ std::string Absolute::getString()
 {
     return "|" + getFirstExpression()->getString() + "|";
 }
+
+std::optional<double> Absolute::getConstant()
+{
+	if (const auto c = getFirstExpression()->getConstant(); c.has_value())
+    {
+        return std::abs(c.value());
+    }
+    else
+    {
+        return std::nullopt;
+    }
+}

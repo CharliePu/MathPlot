@@ -19,3 +19,8 @@ std::string X::getString()
 {
     return "x";
 }
+
+std::optional<double> X::getConstant()
+{
+    return std::nullopt;
+}

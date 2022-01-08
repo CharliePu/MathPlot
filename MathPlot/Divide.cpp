@@ -33,3 +33,17 @@ std::string Divide::getString()
 {
     return getFirstExpression()->getString() + " / " + getSecondExpression()->getString();
 }
+
+std::optional<double> Divide::getConstant()
+{
+	const auto c1 = getFirstExpression()->getConstant();
+	const auto c2 = getSecondExpression()->getConstant();
+    if (c1.has_value() && c2.has_value())
+    {
+        return c1.value() / c2.value();
+    }
+    else
+    {
+        return std::nullopt;
+    }
+}

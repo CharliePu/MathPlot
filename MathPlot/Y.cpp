@@ -19,3 +19,8 @@ std::string Y::getString()
 {
     return "y";
 }
+
+std::optional<double> Y::getConstant()
+{
+    return std::nullopt;
+}

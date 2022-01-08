@@ -27,3 +27,8 @@ std::string Constant::getString()
     ss << c;
     return ss.str();
 }
+
+std::optional<double> Constant::getConstant()
+{
+    return c;
+}
