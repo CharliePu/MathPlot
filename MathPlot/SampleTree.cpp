@@ -45,9 +45,9 @@ bool SampleTree::check(std::unique_ptr<SampleTreeNode>* node, double x, double y
 			}
 		}
 
-		if (x < midX)
+		if (y < midY)
 		{
-			if (y < midY)
+			if (x < midX)
 			{
 				return check(&(*node)->nodes[0], x, y);
 			}
@@ -58,7 +58,7 @@ bool SampleTree::check(std::unique_ptr<SampleTreeNode>* node, double x, double y
 		}
 		else
 		{
-			if (y < midY)
+			if (x < midX)
 			{
 				return check(&(*node)->nodes[2], x, y);
 			}

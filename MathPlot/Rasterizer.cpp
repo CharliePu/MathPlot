@@ -321,7 +321,7 @@ void Rasterizer::generateRegions()
 
     std::vector<unsigned char> pixels;
     pixels.reserve((map.size() - 1) * (map.front().size() - 1));
-    for (int y = height - 1; y >= 0; y--)
+    for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)
         {
