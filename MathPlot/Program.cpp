@@ -46,6 +46,9 @@ Program::Program()
     }
 
     glfwSetScrollCallback(window, scrollCallback);
+
+    glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 }
 
 Program::~Program()

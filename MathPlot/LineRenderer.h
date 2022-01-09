@@ -11,8 +11,8 @@ public:
     virtual void draw() override;
     void updateData(const std::vector<double>& data);
 private:
-    size_t vertexCount;
-    unsigned int vao, vbo, transformLoc;
+    unsigned int vao, vbo;
+	int vertexCount, transformLoc;
     Shader shader;
 };
 

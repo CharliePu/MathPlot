@@ -10,22 +10,19 @@
 LineRenderer::LineRenderer():
 shader(R"(.\shaders\line.vert)", R"(.\shaders\line.frag)")
 {
-    glLineWidth(8.0);
-    glEnable(GL_LINE_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 2 * sizeof(double), (void*)0);
+    glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 2 * sizeof(double), nullptr);
 
     transformLoc = glGetUniformLocation(shader, "transMat");
 }
 
 void LineRenderer::draw()
 {
+    glLineWidth(8.0);
     shader.use();
     glBindVertexArray(vao);
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(getTransMat()));
@@ -42,5 +39,6 @@ void LineRenderer::updateData(const std::vector<double>& data)
     vertexCount = data.size() / 2;
 
     glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(double) * data.size(), data.data(), GL_DYNAMIC_DRAW);
 }

@@ -13,6 +13,7 @@
 #include "StatementParser.h"
 #include "SampleTree.h"
 #include "Rasterizer.h"
+#include "GridRenderer.h"
 #include <iostream>
 #include <atomic>
 
@@ -41,12 +42,11 @@ int main()
 
     RegionRenderer regionRenderer;
     LineRenderer lineRenderer;
+    GridRenderer gridRenderer;
     
     std::optional<Statement> currentStatement;
     Plot plot;
 
-
-    
     threadShouldClose = false;
     std::thread inputThread(concurrentInput);
 
@@ -72,6 +72,7 @@ int main()
             rasterizer.closeData();
         }
 
+        gridRenderer.draw();
         regionRenderer.draw();
         lineRenderer.draw();
 
@@ -95,6 +96,7 @@ int main()
         if (program.mouseDragged())
         {
             plot.move(program.getMouseDeltaX() * (plot.getXMax() - plot.getXMin()), program.getMouseDeltaY() * (plot.getYMax() - plot.getYMin()));
+            gridRenderer.updatePlot(plot);
 
             regionRenderer.move(program.getMouseDeltaX() * 2, -program.getMouseDeltaY() * 2);
             lineRenderer.move(program.getMouseDeltaX() * 2, -program.getMouseDeltaY() * 2);
@@ -106,6 +108,7 @@ int main()
             plot.zoom(plot.getXMin() + program.getMouseX() * (plot.getXMax() - plot.getXMin()),
                 plot.getYMax() - program.getMouseY() * (plot.getYMax() - plot.getYMin()),
                 -program.getMouseScroll());
+            gridRenderer.updatePlot(plot);
 
             regionRenderer.zoom(program.getMouseX() * 2 - 1, -program.getMouseY() * 2 + 1, program.getMouseScroll());
             lineRenderer.zoom(program.getMouseX() * 2 - 1, -program.getMouseY() * 2 + 1, program.getMouseScroll());

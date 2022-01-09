@@ -13,8 +13,8 @@ RegionRenderer::RegionRenderer():
     };
 
     glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
     glBindVertexArray(vao);
+    glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
@@ -28,7 +28,6 @@ RegionRenderer::RegionRenderer():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
 
     transformLoc = glGetUniformLocation(shader, "transMat");
 }

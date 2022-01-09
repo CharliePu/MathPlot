@@ -123,6 +123,9 @@
     <ClCompile Include="Interval.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GridRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Expression.h">
@@ -206,11 +209,16 @@
     <ClInclude Include="Interval.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GridRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\region.frag" />
     <None Include="shaders\region.vert" />
     <None Include="shaders\line.frag" />
     <None Include="shaders\line.vert" />
+    <None Include="shaders\grid.frag" />
+    <None Include="shaders\grid.vert" />
   </ItemGroup>
 </Project>
