@@ -11,7 +11,6 @@
 #include "Subtract.h"
 #include "ExpressionParser.h"
 #include "StatementParser.h"
-#include "SampleTree.h"
 #include "Rasterizer.h"
 #include "GridRenderer.h"
 #include <iostream>

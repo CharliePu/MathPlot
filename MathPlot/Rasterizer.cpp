@@ -5,7 +5,7 @@
 #include <iostream>
 #include <queue>
 
-Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this), xStep(1.0), yStep(1.0)
+Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this)
 {
 }
 
@@ -26,8 +26,6 @@ void Rasterizer::rasterizeTask()
             plot = requestPlot;
             width = requestWidth;
             height = requestHeight;
-            xStep = plot.getWidth() / static_cast<double>(width);
-            yStep = plot.getHeight() / static_cast<double>(height);
 
             rasterize();
             if (!requestReady)
@@ -53,18 +51,6 @@ void Rasterizer::requestRasterize(Plot plot, int width, int height)
 
 void Rasterizer::rasterize()
 {
-    std::queue<IntervalNode*> nodeQueue;
-
-    auto expression = plot.getStatement().getExpression();
-    auto certaintyCheck = plot.getStatement().getIntervalCertaintyChecker();
-    auto comparator = plot.getStatement().getComparator();
-
-
-    rootNode = std::make_unique<IntervalNode>();
-    rootNode->xi = IInterval(0, width - 1);
-    rootNode->yi = IInterval(0, height - 1);
-    nodeQueue.push(rootNode.get());
-
     auto getPixelInterval = [&](Interval interval, double width) {
         double lowerBound = interval.lower() / width;
         double upperBound = (interval.upper() + 1) / width;
@@ -78,6 +64,18 @@ void Rasterizer::rasterize()
 
         return Interval(normalizedInterval.lower() * scale + offset, normalizedInterval.upper() * scale + offset);
     };
+
+
+    auto expression = plot.getStatement().getExpression();
+    auto certaintyCheck = plot.getStatement().getIntervalCertaintyChecker();
+    auto comparator = plot.getStatement().getComparator();
+
+    std::queue<IntervalNode*> nodeQueue;
+
+    rootNode = std::make_unique<IntervalNode>();
+    rootNode->xi = IInterval(0, width - 1);
+    rootNode->yi = IInterval(0, height - 1);
+    nodeQueue.push(rootNode.get());
 
     while (!nodeQueue.empty())
     {
@@ -123,8 +121,7 @@ void Rasterizer::rasterize()
         nodeQueue.push(&(*node->children)[1]);
     }
 
-    //std::vector<std::vector<bool>> dMap;
-    std::vector<unsigned char> pixels;
+    pixels.clear();
     pixels.reserve(height * width);
     for (int y = 0; y < height; y++)
     {
@@ -134,7 +131,6 @@ void Rasterizer::rasterize()
             pixels.push_back(checkPixel(x, y) ? 255 : 0);
             pixels.push_back(0);
             pixels.push_back(0);
-            //dMap[y].push_back(checkPixel(x, y));
         }
 
         // 4-byte alignment
@@ -143,8 +139,6 @@ void Rasterizer::rasterize()
             pixels.push_back(0);
         }
     }
-
-    regionData = pixels;
 }
 
 bool Rasterizer::checkPixel(int x, int y)
@@ -177,12 +171,7 @@ bool Rasterizer::isDataReady()
 std::vector<unsigned char> Rasterizer::getData()
 {
     dataReady = false;
-    return regionData;
-}
-
-double Rasterizer::normalize(double val, double min, double max)
-{
-    return (val - min) / (max - min) * 2.0 - 1.0;
+    return pixels;
 }
 
 size_t Rasterizer::getWidth()

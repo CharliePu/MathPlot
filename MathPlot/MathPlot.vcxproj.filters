@@ -111,20 +111,11 @@
     <ClCompile Include="Absolute.cpp">
       <Filter>Source Files\Expressions\Operators</Filter>
     </ClCompile>
-    <ClCompile Include="SampleTree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SampleMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sample.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Interval.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GridRenderer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Renderers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -197,20 +188,11 @@
     <ClInclude Include="Absolute.h">
       <Filter>Header Files\Expressions\Operators</Filter>
     </ClInclude>
-    <ClInclude Include="SampleTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SampleMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sample.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Interval.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GridRenderer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -24,7 +24,6 @@ public:
 	bool isDataReady();
 
 	std::vector<unsigned char> getData();
-	std::vector<double> getLines();
 
 	size_t getWidth();
 	size_t getHeight();
@@ -37,23 +36,17 @@ private:
 
 	bool checkPixel(int x, int y);
 
-	double normalize(double val, double min, double max);
-
-
 	std::atomic_bool requestReady, dataReady, threadShouldClose;
 
 	int width, height;
-	double xStep, yStep;
 	Plot plot;
 
 	int requestWidth, requestHeight;
 	Plot requestPlot;
 
-	std::vector<std::vector<Point>> map;
-
 	std::unique_ptr<IntervalNode> rootNode;
 
 	std::thread thread;
 
-	std::vector<unsigned char> regionData;
+	std::vector<unsigned char> pixels;
 };
