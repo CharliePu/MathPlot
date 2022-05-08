@@ -65,16 +65,12 @@ int main()
     {
         if (rasterizer.isDataReady())
         {
-            lineRenderer.resetTransform();
             regionRenderer.resetTransform();
-            regionRenderer.updateData(rasterizer.getRegions(), rasterizer.getRegionWidth(), rasterizer.getRegionHeight());
-            lineRenderer.updateData(rasterizer.getLines());
-            rasterizer.closeData();
+            regionRenderer.setPixels(rasterizer.getData(), rasterizer.getWidth(), rasterizer.getHeight());
         }
 
         gridRenderer.draw();
         regionRenderer.draw();
-        lineRenderer.draw();
 
         if (dataReady)
         {

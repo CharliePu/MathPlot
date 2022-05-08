@@ -15,26 +15,21 @@ public:
 	void requestRasterize(Plot plot, int width, int height);
 
 	bool isDataReady();
-	void closeData();
 
-	std::vector<unsigned char> getRegions();
+	std::vector<unsigned char> getData();
 	std::vector<double> getLines();
 
-	size_t getRegionWidth();
-	size_t getRegionHeight();
+	size_t getWidth();
+	size_t getHeight();
 
 private:
 	void rasterizeTask();
 
 	void rasterize();
 
-	void generateLines();
 	void generateRegions();
 
 	double normalize(double val, double min, double max);
-	void processRect(const std::array<Point*, 4>& points, std::vector<double>& vertices);
-	void identifyLineSegment(std::array<Point*, 3> points, std::vector<double>& vertices);
-	Point findZeroPoint(Point* p1, Point* p2);
 
 
 	std::atomic_bool requestReady, dataReady, threadShouldClose;
@@ -48,12 +43,10 @@ private:
 
 	std::vector<std::vector<Point>> map;
 	SampleTree sampleTree;
-	SampleMap sampleMap;
 
 	std::thread thread;
 
 	std::vector<unsigned char> regionData;
-	std::vector<double> lineData;
 
 	std::vector<Sample> samples;
 };

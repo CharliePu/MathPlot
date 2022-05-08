@@ -6,7 +6,7 @@ class RegionRenderer :
 public:
     RegionRenderer();
     virtual void draw() override;
-    void updateData(const std::vector<unsigned char>& data, size_t width, size_t height);
+    void setPixels(const std::vector<unsigned char>& data, size_t width, size_t height);
 private:
     Shader shader;
     unsigned int vao, vbo, textureId, transformLoc;
