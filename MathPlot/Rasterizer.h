@@ -3,8 +3,15 @@
 #include "Plot.h"
 
 #include "Point.h"
-#include "SampleMap.h"
-#include "SampleTree.h"
+
+using IInterval = boost::numeric::interval<int>;
+
+struct IntervalNode
+{
+	IInterval xi, yi;
+	bool value;
+	std::unique_ptr<std::array<IntervalNode, 2>> children;
+};
 
 class Rasterizer
 {
@@ -23,11 +30,12 @@ public:
 	size_t getHeight();
 
 private:
+
 	void rasterizeTask();
 
 	void rasterize();
 
-	void generateRegions();
+	bool checkPixel(int x, int y);
 
 	double normalize(double val, double min, double max);
 
@@ -37,16 +45,15 @@ private:
 	int width, height;
 	double xStep, yStep;
 	Plot plot;
-	
+
 	int requestWidth, requestHeight;
 	Plot requestPlot;
 
 	std::vector<std::vector<Point>> map;
-	SampleTree sampleTree;
+
+	std::unique_ptr<IntervalNode> rootNode;
 
 	std::thread thread;
 
 	std::vector<unsigned char> regionData;
-
-	std::vector<Sample> samples;
 };
