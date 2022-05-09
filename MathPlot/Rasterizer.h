@@ -25,6 +25,8 @@ public:
 
 	std::vector<unsigned char> getData();
 
+	void toggleDebug();
+
 	size_t getWidth();
 	size_t getHeight();
 
@@ -34,9 +36,13 @@ private:
 
 	void rasterize();
 
-	double checkPixel(int x, int y);
+	double getPixel(int x, int y);
+
+	bool checkDebugFrame(int x, int y);
 
 	std::atomic_bool requestReady, dataReady, threadShouldClose;
+
+	bool debugEnabled;
 
 	int width, height;
 	Plot plot;

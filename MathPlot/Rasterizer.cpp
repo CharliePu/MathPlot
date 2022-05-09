@@ -5,7 +5,7 @@
 #include <iostream>
 #include <queue>
 
-Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this)
+Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this), debugEnabled(false)
 {
 }
 
@@ -137,9 +137,18 @@ void Rasterizer::rasterize()
         //dMap.emplace_back();
         for (int x = 0; x < width; x++)
         {
-            pixels.push_back(checkPixel(x, y) * 255);
-            pixels.push_back(0);
-            pixels.push_back(0);
+            if (checkDebugFrame(x, y) && debugEnabled)
+            {
+                pixels.push_back(255);
+                pixels.push_back(255);
+                pixels.push_back(255);
+            }
+            else
+            {
+                pixels.push_back(getPixel(x, y) * 255);
+                pixels.push_back(0);
+                pixels.push_back(0);
+            }
         }
 
         // 4-byte alignment
@@ -150,7 +159,7 @@ void Rasterizer::rasterize()
     }
 }
 
-double Rasterizer::checkPixel(int x, int y)
+double Rasterizer::getPixel(int x, int y)
 {
     auto currNode = rootNode.get();
 
@@ -168,8 +177,37 @@ double Rasterizer::checkPixel(int x, int y)
             return currNode->value;
         }
     }
+    
+    return 0.0;
+}
+
+bool Rasterizer::checkDebugFrame(int x, int y)
+{
+    auto currNode = rootNode.get();
+
+    while (currNode) {
+        if (currNode->children) {
+            for (auto& child : *currNode->children) {
+                if (child.xi.lower() <= x && child.xi.upper() >= x &&
+                    child.yi.lower() <= y && child.yi.upper() >= y) {
+                    currNode = &child;
+                    continue;
+                }
+            }
+        }
+        else {
+            return currNode->xi.lower() == x || currNode->xi.upper() == x ||
+                currNode->yi.lower() == y || currNode->yi.upper() == y;
+        }
+    }
 
     return false;
+}
+
+void Rasterizer::toggleDebug()
+{
+    debugEnabled = !debugEnabled;
+    requestReady = true;
 }
 
 bool Rasterizer::isDataReady()

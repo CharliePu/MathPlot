@@ -87,6 +87,10 @@ int main()
         {
             inputStatus = true;
         }
+        if (program.keyPressed('D'))
+        {
+            rasterizer.toggleDebug();
+        }
 
         if (program.mouseDragged())
         {
