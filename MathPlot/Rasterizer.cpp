@@ -86,7 +86,16 @@ void Rasterizer::rasterize()
         Interval mappedYi = mapToInterval(getPixelInterval(node->yi, height), Interval(plot.getYMin(), plot.getYMax()));
 
         auto evaluatedInterval = expression->evaluateInterval(mappedXi, mappedYi);
-        node->value = comparator(boost::numeric::median(evaluatedInterval), 0.0);
+
+        //node->value = comparator(boost::numeric::median(evaluatedInterval), 0.0);
+
+
+        // Blending lower bound and upper bound values
+        double lbVal = comparator(evaluatedInterval.lower(), 0.0);
+        double lbRat = abs(evaluatedInterval.lower()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
+        double ubVal = comparator(evaluatedInterval.upper(), 0.0);
+        double ubRat = abs(evaluatedInterval.upper()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
+        node->value = lbVal * lbRat + ubVal * ubRat;
 
         if (certaintyCheck(evaluatedInterval)) {
             continue;
@@ -128,7 +137,7 @@ void Rasterizer::rasterize()
         //dMap.emplace_back();
         for (int x = 0; x < width; x++)
         {
-            pixels.push_back(checkPixel(x, y) ? 255 : 0);
+            pixels.push_back(checkPixel(x, y) * 255);
             pixels.push_back(0);
             pixels.push_back(0);
         }
@@ -141,7 +150,7 @@ void Rasterizer::rasterize()
     }
 }
 
-bool Rasterizer::checkPixel(int x, int y)
+double Rasterizer::checkPixel(int x, int y)
 {
     auto currNode = rootNode.get();
 

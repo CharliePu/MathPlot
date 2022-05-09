@@ -9,7 +9,7 @@ using IInterval = boost::numeric::interval<int>;
 struct IntervalNode
 {
 	IInterval xi, yi;
-	bool value;
+	double value;
 	std::unique_ptr<std::array<IntervalNode, 2>> children;
 };
 
@@ -34,7 +34,7 @@ private:
 
 	void rasterize();
 
-	bool checkPixel(int x, int y);
+	double checkPixel(int x, int y);
 
 	std::atomic_bool requestReady, dataReady, threadShouldClose;
 
