@@ -5,6 +5,20 @@ std::function<void(int, int)> sizeChangeFunction;
 bool scrolled;
 double scrollY;
 
+enum class KeyState
+{
+    PRESS = GLFW_PRESS,
+    REPEAT = GLFW_REPEAT,
+    RELEASE = GLFW_RELEASE
+};
+
+std::unordered_map<char, KeyState> keyState;
+
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    keyState[key] = static_cast<KeyState>(action);
+}
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -47,6 +61,8 @@ Program::Program()
 
     glfwSetScrollCallback(window, scrollCallback);
 
+    glfwSetKeyCallback(window, keyCallback);
+
     glEnable(GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 }
@@ -56,18 +72,20 @@ Program::~Program()
     glfwTerminate();
 }
 
+bool Program::keyPressing(char c)
+{
+    return keyState.contains(c) && (keyState[c] == KeyState::PRESS || keyState[c] == KeyState::REPEAT);
+}
+
 bool Program::keyPressed(char c)
 {
-    if (glfwGetKey(window, c) == GLFW_PRESS && !keyState[c])
+    if (!keyState.contains(c) || keyState[c] != KeyState::PRESS)
     {
-        keyState[c] = true;
-        return true;
-    }
-    else
-    {
-        keyState[c] = false;
         return false;
     }
+
+    keyState[c] = KeyState::REPEAT;
+    return true;
 }
 
 bool Program::mouseDragged()

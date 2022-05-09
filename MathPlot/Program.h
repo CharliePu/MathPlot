@@ -15,6 +15,7 @@ public:
 	Program();
 	~Program();
 	
+	bool keyPressing(char c);
 	bool keyPressed(char c);
 
 	bool mouseDragged();
@@ -33,7 +34,6 @@ public:
 
 	bool shouldClose();
 private:
-	std::unordered_map<char, bool> keyState;
 	double prevMouseX, prevMouseY, mouseX, mouseY;
 
 	GLFWwindow* window;

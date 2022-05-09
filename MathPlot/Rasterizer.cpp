@@ -207,7 +207,7 @@ bool Rasterizer::checkDebugFrame(int x, int y)
 void Rasterizer::toggleDebug()
 {
     debugEnabled = !debugEnabled;
-    requestReady = true;
+    requestRasterize(plot, width, height);
 }
 
 bool Rasterizer::isDataReady()
