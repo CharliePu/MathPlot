@@ -5,7 +5,7 @@
 #include <iostream>
 #include <queue>
 
-Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this), xStep(1.0), yStep(1.0)
+Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this), debugEnabled(false)
 {
 }
 
@@ -26,8 +26,6 @@ void Rasterizer::rasterizeTask()
             plot = requestPlot;
             width = requestWidth;
             height = requestHeight;
-            xStep = plot.getWidth() / static_cast<double>(width);
-            yStep = plot.getHeight() / static_cast<double>(height);
 
             rasterize();
             if (!requestReady)
@@ -53,282 +51,104 @@ void Rasterizer::requestRasterize(Plot plot, int width, int height)
 
 void Rasterizer::rasterize()
 {
-    sampleMap.construct(plot, xStep, yStep);
-    sampleTree = SampleTree();
+    auto getPixelInterval = [&](Interval interval, double width) {
+        double lowerBound = interval.lower() / width;
+        double upperBound = (interval.upper() + 1) / width;
 
-    samples.clear();
+        return Interval(lowerBound, upperBound);
+    };
 
-    std::queue<Interval> xiQueue, yiQueue;
-    std::queue<std::unique_ptr<SampleTreeNode>*> nodeQueue;
+    auto mapToInterval = [&](Interval normalizedInterval, Interval mappedRange) {
+        double scale = boost::numeric::width(mappedRange);
+        double offset = mappedRange.lower();
+
+        return Interval(normalizedInterval.lower() * scale + offset, normalizedInterval.upper() * scale + offset);
+    };
+
 
     auto expression = plot.getStatement().getExpression();
     auto certaintyCheck = plot.getStatement().getIntervalCertaintyChecker();
     auto comparator = plot.getStatement().getComparator();
 
-    xiQueue.push(Interval(plot.getXMin(), plot.getXMax()));
-    yiQueue.push(Interval(plot.getYMin(), plot.getYMax()));
+    std::queue<IntervalNode*> nodeQueue;
 
-    nodeQueue.push(&sampleTree.root);
+    rootNode = std::make_unique<IntervalNode>();
+    rootNode->xi = IInterval(0, width - 1);
+    rootNode->yi = IInterval(0, height - 1);
+    nodeQueue.push(rootNode.get());
 
     while (!nodeQueue.empty())
     {
-        auto& node = *nodeQueue.front();
-        auto& xi = xiQueue.front();
-        auto& yi = yiQueue.front();
+        auto node = nodeQueue.front();
+        nodeQueue.pop();
 
-        node = std::make_unique<SampleTreeNode>();
-        node->xi = xi;
-        node->yi = yi;
+        Interval mappedXi = mapToInterval(getPixelInterval(node->xi, width), Interval(plot.getXMin(), plot.getXMax()));
+        Interval mappedYi = mapToInterval(getPixelInterval(node->yi, height), Interval(plot.getYMin(), plot.getYMax()));
 
-        bool xLimReached = (xi.upper() - xi.lower()) <= xStep;
-        bool yLimReached = (yi.upper() - yi.lower()) <= yStep;
+        auto evaluatedInterval = expression->evaluateInterval(mappedXi, mappedYi);
 
-        sampleMap.fill(xi, yi);
+        //node->value = comparator(boost::numeric::median(evaluatedInterval), 0.0);
 
-        double midX = (xi.lower() + xi.upper()) / 2.0;
-        double midY = (yi.lower() + yi.upper()) / 2.0;
-        auto b = expression->evaluateInterval(xi, yi);
-        auto b1 = certaintyCheck(b);
-        if (empty(b) || b1 || (xLimReached && yLimReached))
-        {
-            node->determinedState = comparator(expression->evaluate(midX, midY), 0);
-            node->sample = sampleMap.getSamplePoints(xi, yi);
-            samples.push_back(node->sample);
+
+        // Blending lower bound and upper bound values
+        double lbVal = comparator(evaluatedInterval.lower(), 0.0);
+        double lbRat = abs(evaluatedInterval.lower()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
+        double ubVal = comparator(evaluatedInterval.upper(), 0.0);
+        double ubRat = abs(evaluatedInterval.upper()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
+        node->value = lbVal * lbRat + ubVal * ubRat;
+
+        if (certaintyCheck(evaluatedInterval)) {
+            continue;
         }
-        else
+
+        if (boost::numeric::width(node->xi) < 1.0 && boost::numeric::width(node->yi) < 1.0) {
+            continue;
+        }
+
+        node->children = std::make_unique<std::array<IntervalNode, 2>>();
+
+        if (boost::numeric::width(node->xi) >= 1.0 && 
+            (boost::numeric::width(node->yi) <= boost::numeric::width(node->xi) || 
+             boost::numeric::width(node->yi) < 1.0))
         {
-            if (xLimReached)
+            (*node->children)[0].xi = IInterval(node->xi.lower(), boost::numeric::median(node->xi));
+            (*node->children)[0].yi = node->yi;
+
+            (*node->children)[1].xi = IInterval(boost::numeric::median(node->xi) + 1, node->xi.upper());
+            (*node->children)[1].yi = node->yi;
+        }
+        else if (boost::numeric::width(node->yi) >= 1.0)
+        {
+            (*node->children)[0].xi = node->xi;
+            (*node->children)[0].yi = IInterval(node->yi.lower(), boost::numeric::median(node->yi));
+
+            (*node->children)[1].xi = node->xi;
+            (*node->children)[1].yi = IInterval(boost::numeric::median(node->yi) + 1, node->yi.upper());
+        }
+
+        nodeQueue.push(&(*node->children)[0]);
+        nodeQueue.push(&(*node->children)[1]);
+    }
+
+    pixels.clear();
+    pixels.reserve(height * width);
+    for (int y = 0; y < height; y++)
+    {
+        //dMap.emplace_back();
+        for (int x = 0; x < width; x++)
+        {
+            if (checkDebugFrame(x, y) && debugEnabled)
             {
-                node->xSplit = false;
-                node->ySplit = true;
-
-                node->nodes.push_back(nullptr);
-                xiQueue.push(xi);
-                yiQueue.emplace(yi.lower(), midY);
-
-                node->nodes.push_back(nullptr);
-                xiQueue.push(xi);
-                yiQueue.emplace(midY, yi.upper());
-
-                nodeQueue.push(&node->nodes[0]);
-                nodeQueue.push(&node->nodes[1]);
-            }
-            else if (yLimReached)
-            {
-                node->xSplit = true;
-                node->ySplit = false;
-
-                node->nodes.push_back(nullptr);
-                xiQueue.emplace(xi.lower(), midX);
-                yiQueue.push(yi);
-
-                node->nodes.push_back(nullptr);
-                xiQueue.emplace(midX, xi.upper());
-                yiQueue.push(yi);
-
-                nodeQueue.push(&node->nodes[0]);
-                nodeQueue.push(&node->nodes[1]);
+                pixels.push_back(255);
+                pixels.push_back(255);
+                pixels.push_back(255);
             }
             else
             {
-                node->xSplit = true;
-                node->ySplit = true;
-
-                node->nodes.push_back(nullptr);
-                xiQueue.emplace(xi.lower(), midX);
-                yiQueue.emplace(yi.lower(), midY);
-
-                node->nodes.push_back(nullptr);
-                xiQueue.emplace(midX, xi.upper());
-                yiQueue.emplace(yi.lower(), midY);
-
-                node->nodes.push_back(nullptr);
-                xiQueue.emplace(xi.lower(), midX);
-                yiQueue.emplace(midY, yi.upper());
-
-                node->nodes.push_back(nullptr);
-                xiQueue.emplace(midX, xi.upper());
-                yiQueue.emplace(midY, yi.upper());
-
-                nodeQueue.push(&node->nodes[0]);
-                nodeQueue.push(&node->nodes[1]);
-                nodeQueue.push(&node->nodes[2]);
-                nodeQueue.push(&node->nodes[3]);
+                pixels.push_back(getPixel(x, y) * 255);
+                pixels.push_back(0);
+                pixels.push_back(0);
             }
-        }
-
-        nodeQueue.pop();
-        xiQueue.pop();
-        yiQueue.pop();
-    }
-
-    generateLines();
-    generateRegions();
-}
-
-bool Rasterizer::isDataReady()
-{
-    return dataReady;
-}
-
-void Rasterizer::closeData()
-{
-    dataReady = false;
-}
-
-std::vector<unsigned char> Rasterizer::getRegions()
-{
-    return regionData;
-}
-
-std::vector<double> Rasterizer::getLines()
-{
-    return lineData;
-}
-
-void Rasterizer::generateLines()
-{
-    std::vector<double> vertices;
-    for (auto& sample : samples)
-    {
-        processRect(sample.points, vertices);
-    }
-    //for (size_t y = data.size() - 1; y > 0; y--)
-    //{
-    //    for (size_t x = 0; x < data.front().size() - 1; x++)
-    //    {
-    //        processRect({
-    //            data[y][x],
-    //            data[y][x + 1],
-    //            data[y - 1][x],
-    //            data[y - 1][x + 1]
-    //            }, vertices);
-    //    }
-    //}
-    
-    lineData = vertices;
-}
-
-double Rasterizer::normalize(double val, double min, double max)
-{
-    return (val - min) / (max - min) * 2.0 - 1.0;
-}
-
-void Rasterizer::processRect(const std::array<Point*, 4>& points, std::vector<double>& vertices)
-{
-    double average = 0;
-    for (auto& point : points)
-    {
-        average += point->value;
-    }
-    average /= points.size();
-
-    Point center(
-        (points[0]->x + points[1]->x) / 2.0,
-        (points[0]->y + points[2]->y) / 2.0,
-        average);
-
-    identifyLineSegment({ points[0], points[1], &center }, vertices);
-    identifyLineSegment({ &center, points[1], points[3] }, vertices);
-    identifyLineSegment({ &center, points[3], points[2] }, vertices);
-    identifyLineSegment({ points[0], &center, points[2] }, vertices);
-}
-
-void Rasterizer::identifyLineSegment(std::array<Point*, 3> points, std::vector<double>& vertices)
-{
-    std::sort(points.begin(), points.end(), [](Point *ptr1, Point *ptr2)
-    {
-            return ptr1->value < ptr2->value;
-    });
-
-
-    size_t onPointIndex = 0, abovePointIndex = 0, belowPointIndex = 0;
-    size_t belowCount = 0, onCount = 0, aboveCount = 0;
-
-    int i = 0;
-    while (i < points.size() && points[i]->value < 0)
-    {
-        i++;
-        belowCount++;
-    }
-
-    onPointIndex = i;
-    while (i < points.size() && points[i]->value == 0)
-    {
-        i++;
-        onCount++;
-    }
-
-    abovePointIndex = i;
-    aboveCount = points.size() - belowCount - onCount;
-
-    if (aboveCount == 3 || belowCount == 3 || onCount == 3)
-    {
-        return;
-    }
-
-    if (onCount == 1 && (aboveCount == 2 || belowCount == 2))
-    {
-        return;
-    }
-
-    Point p1, p2;
-
-    if (onCount == 2)
-    {
-        p1 = *points[onPointIndex];
-        p2 = *points[onPointIndex + 1];
-    }
-
-    if (onCount == 1 && aboveCount == 1 && belowCount == 1)
-    {
-        p1 = findZeroPoint(points[abovePointIndex], points[belowPointIndex]);
-        p2 = *points[onPointIndex];
-    }
-
-    if (onCount == 0)
-    {
-        if (belowCount == 2)
-        {
-            p1 = findZeroPoint(points[abovePointIndex], points[belowPointIndex]);
-            p2 = findZeroPoint(points[abovePointIndex], points[belowPointIndex + 1]);
-
-        }
-        if (aboveCount == 2)
-        {
-            p1 = findZeroPoint(points[belowPointIndex], points[abovePointIndex]);
-            p2 = findZeroPoint(points[belowPointIndex], points[abovePointIndex + 1]);
-        }
-    }
-
-    vertices.push_back(normalize(p1.x, plot.getXMin(), plot.getXMax()));
-    vertices.push_back(normalize(p1.y, plot.getYMin(), plot.getYMax()));
-    vertices.push_back(normalize(p2.x, plot.getXMin(), plot.getXMax()));
-    vertices.push_back(normalize(p2.y, plot.getYMin(), plot.getYMax()));
-}
-
-Point Rasterizer::findZeroPoint(Point *p1, Point *p2)
-{
-    Point p(*p1 + (*p2 - *p1) * (0.0 - p1->value) / (p2->value - p1->value));
-    p.value = 0;
-    return p;
-}
-
-
-void Rasterizer::generateRegions()
-{
-    auto comparator = plot.getStatement().getComparator();
-    auto map = sampleMap.getMap();
-
-    std::vector<unsigned char> pixels;
-    pixels.reserve((map.size() - 1) * (map.front().size() - 1));
-    for (int y = 0; y < height; y++)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            pixels.push_back(sampleTree.check(plot.getXMin() + (x + 0.5) * xStep, plot.getYMin() + (y + 0.5) * yStep) ? 255 : 0);
-            pixels.push_back(0);
-            pixels.push_back(0);
         }
 
         // 4-byte alignment
@@ -337,16 +157,76 @@ void Rasterizer::generateRegions()
             pixels.push_back(0);
         }
     }
-	
-    regionData = pixels;
 }
 
-size_t Rasterizer::getRegionWidth()
+double Rasterizer::getPixel(int x, int y)
+{
+    auto currNode = rootNode.get();
+
+    while (currNode) {
+        if (currNode->children) {
+            for (auto &child : *currNode->children) {
+                if (child.xi.lower() <= x && child.xi.upper() >= x &&
+                    child.yi.lower() <= y && child.yi.upper() >= y) {
+                    currNode = &child;
+                    continue;
+                }
+            }
+        }
+        else {
+            return currNode->value;
+        }
+    }
+    
+    return 0.0;
+}
+
+bool Rasterizer::checkDebugFrame(int x, int y)
+{
+    auto currNode = rootNode.get();
+
+    while (currNode) {
+        if (currNode->children) {
+            for (auto& child : *currNode->children) {
+                if (child.xi.lower() <= x && child.xi.upper() >= x &&
+                    child.yi.lower() <= y && child.yi.upper() >= y) {
+                    currNode = &child;
+                    continue;
+                }
+            }
+        }
+        else {
+            return currNode->xi.lower() == x || currNode->xi.upper() == x ||
+                currNode->yi.lower() == y || currNode->yi.upper() == y;
+        }
+    }
+
+    return false;
+}
+
+void Rasterizer::toggleDebug()
+{
+    debugEnabled = !debugEnabled;
+    requestReady = true;
+}
+
+bool Rasterizer::isDataReady()
+{
+    return dataReady;
+}
+
+std::vector<unsigned char> Rasterizer::getData()
+{
+    dataReady = false;
+    return pixels;
+}
+
+size_t Rasterizer::getWidth()
 {
     return width;
 }
 
-size_t Rasterizer::getRegionHeight()
+size_t Rasterizer::getHeight()
 {
     return height;
 }

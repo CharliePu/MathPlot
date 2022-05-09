@@ -41,7 +41,7 @@ void RegionRenderer::draw()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void RegionRenderer::updateData(const std::vector<unsigned char>& data, size_t width, size_t height)
+void RegionRenderer::setPixels(const std::vector<unsigned char>& data, size_t width, size_t height)
 {
     glBindTexture(GL_TEXTURE_2D, textureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
