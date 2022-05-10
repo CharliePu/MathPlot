@@ -15,20 +15,34 @@
 #include "GridRenderer.h"
 #include <iostream>
 #include <atomic>
+#include <mutex>
+#include <condition_variable>
 
-std::atomic<bool> threadShouldClose, dataReady, inputStatus;
+std::atomic<bool> threadShouldClose, dataReady;
+bool inputRequested;
+std::condition_variable inputRequestedCv;
+std::mutex inputRequestedMutex;
+
 std::string s;
 
 void concurrentInput()
 {
     while (!threadShouldClose)
     {
-        if (inputStatus)
+        std::unique_lock<std::mutex> inputRequestedLock(inputRequestedMutex);
+        inputRequestedCv.wait(inputRequestedLock, [] {
+            return (inputRequested && !dataReady);
+        });
+        inputRequestedLock.unlock();
+
+        if (!threadShouldClose)
         {
             std::cout << "Input an equation/inequality: ";
             std::cin >> s;
             dataReady = true;
-            inputStatus = false;
+            inputRequestedLock.lock();
+            inputRequested = false;
+            inputRequestedLock.unlock();
         }
     }
 }
@@ -85,7 +99,10 @@ int main()
 
         if (program.keyPressed('I'))
         {
-            inputStatus = true;
+            std::unique_lock<std::mutex> inputRequestLock(inputRequestedMutex);
+            inputRequested = true;
+            inputRequestLock.unlock();
+            inputRequestedCv.notify_one();
         }
         if (program.keyPressed('D'))
         {
@@ -116,6 +133,11 @@ int main()
     }
 
     threadShouldClose = true;
+    dataReady = false;
+    std::unique_lock<std::mutex> inputRequestedLock(inputRequestedMutex);
+    inputRequested = true;
+    inputRequestedLock.unlock();
+    inputRequestedCv.notify_one();
     inputThread.join();
 
     return 0;

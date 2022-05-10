@@ -159,7 +159,7 @@ void Rasterizer::rasterize()
         //dMap.emplace_back();
         for (int x = 0; x < width; x++)
         {
-            if (checkDebugFrame(x, y) && debugEnabled)
+            if (debugEnabled && checkDebugFrame(x, y))
             {
                 pixels.push_back(255);
                 pixels.push_back(255);
