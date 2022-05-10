@@ -37,6 +37,12 @@
     <Filter Include="Source Files\Renderers">
       <UniqueIdentifier>{2378bc43-6ba1-463b-b01f-2ea2dd3ab534}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{00e89b60-ee1f-4584-a1ec-f2495b64f38d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{f0c37832-614e-4d1c-a178-c1c3eb7f9bd6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -78,12 +84,6 @@
     <ClCompile Include="Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Point.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Statement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -115,6 +115,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GridRenderer.cpp">
+      <Filter>Source Files\Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="Widget.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Pane.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Point.cpp">
+      <Filter>Source Files\Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Renderers</Filter>
     </ClCompile>
   </ItemGroup>
@@ -155,12 +167,6 @@
     <ClInclude Include="Program.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Point.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Statement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -194,6 +200,18 @@
     <ClInclude Include="GridRenderer.h">
       <Filter>Header Files\Renderers</Filter>
     </ClInclude>
+    <ClInclude Include="Widget.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Pane.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\region.frag" />
@@ -202,5 +220,7 @@
     <None Include="shaders\line.vert" />
     <None Include="shaders\grid.frag" />
     <None Include="shaders\grid.vert" />
+    <None Include="shaders\pane.frag" />
+    <None Include="shaders\pane.vert" />
   </ItemGroup>
 </Project>

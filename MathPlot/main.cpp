@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <thread>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 #include "Program.h"
 #include "RegionRenderer.h"
@@ -13,10 +16,8 @@
 #include "StatementParser.h"
 #include "Rasterizer.h"
 #include "GridRenderer.h"
-#include <iostream>
-#include <atomic>
-#include <mutex>
-#include <condition_variable>
+#include "Widget.h"
+#include "Pane.h"
 
 std::atomic<bool> threadShouldClose, dataReady;
 bool inputRequested;
@@ -56,6 +57,10 @@ int main()
     RegionRenderer regionRenderer;
     LineRenderer lineRenderer;
     GridRenderer gridRenderer;
+
+    Pane pane(0.0, 0.0, 0.1, 0.1);
+    pane.setPosition(0.0, -1.0);
+    pane.setSize(0.5, 0.1);
     
     std::optional<Statement> currentStatement;
     Plot plot;
@@ -84,6 +89,8 @@ int main()
 
         gridRenderer.draw();
         regionRenderer.draw();
+
+        pane.draw();
 
         if (dataReady)
         {
