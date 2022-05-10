@@ -69,6 +69,24 @@ std::function<bool(Interval)> Statement::getIntervalCertaintyChecker() const
 	}
 }
 
+double Statement::evaluateInterval(Interval x, Interval y, double lineWidth)
+{
+	auto evaluatedInterval = getExpression()->evaluateInterval(x, y);
+	if (relation == Relation::equal)
+	{
+		double r = 1 - std::abs(evaluatedInterval.lower() + evaluatedInterval.upper()) / lineWidth;
+		return r > 0.9 ? r*r*r*r : 0.0;
+	}
+	else
+	{
+		double lbVal = getComparator()(evaluatedInterval.lower(), 0.0);
+		double lbRat = abs(evaluatedInterval.lower()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
+		double ubVal = getComparator()(evaluatedInterval.upper(), 0.0);
+		double ubRat = abs(evaluatedInterval.upper()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
+		return lbVal * lbRat + ubVal * ubRat;
+	}
+}
+
 bool Statement::evaluate(double x, double y)
 {
 	return getComparator()(getExpression()->evaluate(x, y), 0.0);

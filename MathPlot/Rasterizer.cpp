@@ -113,11 +113,15 @@ void Rasterizer::rasterize()
 
 
         // Blending lower bound and upper bound values
-        double lbVal = comparator(evaluatedInterval.lower(), 0.0);
-        double lbRat = abs(evaluatedInterval.lower()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
-        double ubVal = comparator(evaluatedInterval.upper(), 0.0);
-        double ubRat = abs(evaluatedInterval.upper()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
-        node->value = lbVal * lbRat + ubVal * ubRat;
+        //double lbVal = comparator(evaluatedInterval.lower(), 0.0);
+        //double lbRat = abs(evaluatedInterval.lower()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
+        //double ubVal = comparator(evaluatedInterval.upper(), 0.0);
+        //double ubRat = abs(evaluatedInterval.upper()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
+        //node->value = lbVal * lbRat + ubVal * ubRat;
+
+        double xWidth = plot.getWidth() / static_cast<double>(width) * 128.0;
+        double yWidth = plot.getHeight() / static_cast<double>(height) * 128.0;
+        node->value = plot.getStatement().evaluateInterval(mappedXi, mappedYi, std::min(xWidth, yWidth));
 
         if (certaintyCheck(evaluatedInterval)) {
             continue;

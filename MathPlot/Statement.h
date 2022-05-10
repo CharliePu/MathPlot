@@ -24,6 +24,7 @@ public:
 	std::unique_ptr<Expression> getExpression() const;
 	std::function<bool(double, double)> getComparator() const;
 	std::function<bool(Interval)> getIntervalCertaintyChecker() const;
+	double evaluateInterval(Interval x, Interval y, double lineWidth = 1.0);
 	bool evaluate(double x, double y);
 	std::string getString();
 
