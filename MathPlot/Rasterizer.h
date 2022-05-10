@@ -1,5 +1,6 @@
 #pragma once
 #include <thread>
+#include <condition_variable>
 #include "Plot.h"
 
 #include "Point.h"
@@ -40,7 +41,11 @@ private:
 
 	bool checkDebugFrame(int x, int y);
 
-	std::atomic_bool requestReady, dataReady, threadShouldClose;
+	std::atomic_bool threadShouldClose;
+	bool requestReady, dataReady;
+
+	std::mutex requestReadyMutex, dataReadyMutex;
+	std::condition_variable requestReadyCv;
 
 	bool debugEnabled;
 

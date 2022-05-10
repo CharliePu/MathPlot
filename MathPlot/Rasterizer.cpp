@@ -12,6 +12,14 @@ Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this), debugEnabled
 Rasterizer::~Rasterizer()
 {
     threadShouldClose = true;
+
+    {
+        std::lock_guard<std::mutex> requestReadyLock(requestReadyMutex), dataReadyLock(dataReadyMutex);
+        requestReady = true;
+        dataReady = false;
+    }
+
+    requestReadyCv.notify_one();
     thread.join();
 }
 
@@ -19,20 +27,31 @@ void Rasterizer::rasterizeTask()
 {
     while (!threadShouldClose)
     {
-        if (requestReady && !dataReady)
-        {
-            requestReady = false;
+        std::unique_lock requestReadyLock(requestReadyMutex);
+        requestReadyCv.wait(requestReadyLock, [this] {
+            std::lock_guard<std::mutex> dataReadyLock(dataReadyMutex);
+            return (requestReady && !dataReady);
+        });
 
-            plot = requestPlot;
-            width = requestWidth;
-            height = requestHeight;
+        requestReady = false;
+        plot = requestPlot;
+        width = requestWidth;
+        height = requestHeight;
+        requestReadyLock.unlock();
 
-            rasterize();
-            if (!requestReady)
-            {
-                dataReady = true;
-            }
+        if (threadShouldClose) {
+            continue;
         }
+
+        rasterize();
+
+        requestReadyLock.lock();
+        if (!requestReady)
+        {
+            std::lock_guard<std::mutex> dataReadyLock(dataReadyMutex);
+            dataReady = true;
+        }
+        requestReadyLock.unlock();
     }
 }
 
@@ -43,10 +62,13 @@ void Rasterizer::requestRasterize(Plot plot, int width, int height)
         return;
     }
 
+    std::lock_guard<std::mutex> requestReadyLock(requestReadyMutex);
+
     requestPlot = plot;
     requestWidth = width;
     requestHeight = height;
     requestReady = true;
+    requestReadyCv.notify_one();
 }
 
 void Rasterizer::rasterize()
@@ -212,11 +234,13 @@ void Rasterizer::toggleDebug()
 
 bool Rasterizer::isDataReady()
 {
+    std::lock_guard<std::mutex> dataReadyLock(dataReadyMutex);
     return dataReady;
 }
 
 std::vector<unsigned char> Rasterizer::getData()
 {
+    std::lock_guard<std::mutex> dataReadyLock(dataReadyMutex);
     dataReady = false;
     return pixels;
 }
