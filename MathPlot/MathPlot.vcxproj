@@ -149,8 +149,10 @@
     <ClCompile Include="Exponent.cpp" />
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="ExpressionParser.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="GridRenderer.cpp" />
     <ClCompile Include="Interval.cpp" />
+    <ClCompile Include="Label.cpp" />
     <ClCompile Include="LineRenderer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Pane.cpp" />
@@ -179,8 +181,10 @@
     <ClInclude Include="Exponent.h" />
     <ClInclude Include="Expression.h" />
     <ClInclude Include="ExpressionParser.h" />
+    <ClInclude Include="Font.h" />
     <ClInclude Include="GridRenderer.h" />
     <ClInclude Include="Interval.h" />
+    <ClInclude Include="Label.h" />
     <ClInclude Include="LineRenderer.h" />
     <ClInclude Include="Pane.h" />
     <ClInclude Include="Plot.h" />
@@ -204,6 +208,8 @@
   <ItemGroup>
     <None Include="shaders\grid.frag" />
     <None Include="shaders\grid.vert" />
+    <None Include="shaders\label.frag" />
+    <None Include="shaders\label.vert" />
     <None Include="shaders\line.frag" />
     <None Include="shaders\line.vert" />
     <None Include="shaders\pane.frag" />

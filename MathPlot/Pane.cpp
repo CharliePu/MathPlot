@@ -41,8 +41,6 @@ void Pane::update(int windowWidth, int windowHeight)
 Pane::Pane(double x, double y, double width, double height): width(width), height(height),
 shader(R"(.\shaders\pane.vert)", R"(.\shaders\pane.frag)")
 {
-    setPosition(x, y);
-
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     glBindVertexArray(vao);
@@ -51,6 +49,8 @@ shader(R"(.\shaders\pane.vert)", R"(.\shaders\pane.frag)")
     glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 2 * sizeof(double), nullptr);
 
     transformLoc = glGetUniformLocation(shader, "transMat");
+
+    setPosition(x, y);
 }
 
 void Pane::setSize(double width, double height)

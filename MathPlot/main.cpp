@@ -18,6 +18,8 @@
 #include "GridRenderer.h"
 #include "Widget.h"
 #include "Pane.h"
+#include "Font.h"
+#include "Label.h"
 
 std::atomic<bool> threadShouldClose, dataReady;
 bool inputRequested;
@@ -61,6 +63,8 @@ int main()
     Pane pane(0.0, 0.0, 0.1, 0.1);
     pane.setPosition(0.0, -1.0);
     pane.setSize(0.5, 0.1);
+
+    Label label(0.0, 0.0, "This is sample text");
     
     std::optional<Statement> currentStatement;
     Plot plot;
@@ -79,6 +83,10 @@ int main()
         }
         });
 
+
+    auto font = FontFactory().createFont("./fonts/arial.ttf", 64);
+    font->exportBitmap("./output.png");
+
     while (!program.shouldClose())
     {
         if (rasterizer.isDataReady())
@@ -91,6 +99,7 @@ int main()
         regionRenderer.draw();
 
         pane.draw();
+        label.draw();
 
         if (dataReady)
         {
