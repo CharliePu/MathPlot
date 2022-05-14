@@ -153,11 +153,9 @@
     <ClCompile Include="GridRenderer.cpp" />
     <ClCompile Include="Interval.cpp" />
     <ClCompile Include="Label.cpp" />
-    <ClCompile Include="LineRenderer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Pane.cpp" />
     <ClCompile Include="Plot.cpp" />
-    <ClCompile Include="Point.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="RegionRenderer.cpp" />
@@ -185,10 +183,8 @@
     <ClInclude Include="GridRenderer.h" />
     <ClInclude Include="Interval.h" />
     <ClInclude Include="Label.h" />
-    <ClInclude Include="LineRenderer.h" />
     <ClInclude Include="Pane.h" />
     <ClInclude Include="Plot.h" />
-    <ClInclude Include="Point.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="RegionRenderer.h" />

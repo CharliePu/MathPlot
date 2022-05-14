@@ -102,9 +102,6 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Source Files\Renderers</Filter>
     </ClCompile>
-    <ClCompile Include="LineRenderer.cpp">
-      <Filter>Source Files\Renderers</Filter>
-    </ClCompile>
     <ClCompile Include="Exponent.cpp">
       <Filter>Source Files\Expressions\Operators</Filter>
     </ClCompile>
@@ -122,9 +119,6 @@
     </ClCompile>
     <ClCompile Include="Pane.cpp">
       <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Point.cpp">
-      <Filter>Source Files\Renderers</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Renderers</Filter>
@@ -191,9 +185,6 @@
     <ClInclude Include="RegionRenderer.h">
       <Filter>Header Files\Renderers</Filter>
     </ClInclude>
-    <ClInclude Include="LineRenderer.h">
-      <Filter>Header Files\Renderers</Filter>
-    </ClInclude>
     <ClInclude Include="Exponent.h">
       <Filter>Header Files\Expressions\Operators</Filter>
     </ClInclude>
@@ -213,9 +204,6 @@
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>Header Files\Renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="Point.h">
       <Filter>Header Files\Renderers</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">

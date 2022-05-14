@@ -9,7 +9,6 @@
 
 #include "Program.h"
 #include "RegionRenderer.h"
-#include "LineRenderer.h"
 #include "Expression.h"
 #include "Subtract.h"
 #include "ExpressionParser.h"
@@ -57,7 +56,6 @@ int main()
     Rasterizer rasterizer;
 
     RegionRenderer regionRenderer;
-    LineRenderer lineRenderer;
     GridRenderer gridRenderer;
 
 
@@ -126,7 +124,6 @@ int main()
             gridRenderer.updatePlot(plot);
 
             regionRenderer.move(program.getMouseDeltaX() * 2, -program.getMouseDeltaY() * 2);
-            lineRenderer.move(program.getMouseDeltaX() * 2, -program.getMouseDeltaY() * 2);
 
             rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
         }
@@ -138,7 +135,6 @@ int main()
             gridRenderer.updatePlot(plot);
 
             regionRenderer.zoom(program.getMouseX() * 2 - 1, -program.getMouseY() * 2 + 1, program.getMouseScroll());
-            lineRenderer.zoom(program.getMouseX() * 2 - 1, -program.getMouseY() * 2 + 1, program.getMouseScroll());
             rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
         }
     }

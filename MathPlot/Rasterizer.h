@@ -3,8 +3,6 @@
 #include <condition_variable>
 #include "Plot.h"
 
-#include "Point.h"
-
 using IInterval = boost::numeric::interval<int>;
 
 struct IntervalNode
