@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/MathPlot/output.png
+/MathPlot/fonts/ebrima.ttf
+/MathPlot/fonts/arial.ttf
+/MathPlot/fonts

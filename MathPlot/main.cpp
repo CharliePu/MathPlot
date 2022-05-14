@@ -60,11 +60,8 @@ int main()
     LineRenderer lineRenderer;
     GridRenderer gridRenderer;
 
-    Pane pane(0.0, 0.0, 0.1, 0.1);
-    pane.setPosition(0.0, -1.0);
-    pane.setSize(0.5, 0.1);
 
-    Label label(0.0, 0.0, "Hello World!");
+    Label label(-0.95, -0.95, "Press I to plot an equation");
     
     std::optional<Statement> currentStatement;
     Plot plot;
@@ -83,10 +80,6 @@ int main()
         }
         });
 
-
-    auto font = FontFactory().createFont("./fonts/arial.ttf", 64);
-    font->exportBitmap("./output.png");
-
     while (!program.shouldClose())
     {
         if (rasterizer.isDataReady())
@@ -98,7 +91,9 @@ int main()
         gridRenderer.draw();
         regionRenderer.draw();
 
-        pane.draw();
+        if (!plot.empty()) {
+            label.setText(plot.getStatement().getString());
+        }
         label.draw();
 
         if (dataReady)
