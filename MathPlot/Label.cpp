@@ -20,6 +20,7 @@ void Label::typeUnfocusCallback()
 void Label::draw()
 {
 	shader.use();
+	glBindTexture(GL_TEXTURE_2D, textureId);
 	glBindVertexArray(vao);
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformMat));
 	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
@@ -37,7 +38,7 @@ void Label::update(int windowWidth, int windowHeight)
 {
 }
 
-Label::Label(): shader(R"(.\shaders\label.vert)", R"(.\shaders\label.frag)"), font(FontFactory().createFont("./fonts/arial.ttf", 32))
+Label::Label(): shader(R"(.\shaders\label.vert)", R"(.\shaders\label.frag)"), font(FontFactory().createFont("./fonts/arial.ttf", 64))
 {
 }
 
@@ -49,9 +50,9 @@ Label::Label(double x, double y, const std::string& text) : Label()
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 2 * sizeof(double), NULL);
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), (void *)(2 * sizeof(double)));
+	glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), NULL);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), (void *)(2 * sizeof(double)));
 
 	transformLoc = glGetUniformLocation(shader, "transMat");
 
@@ -80,30 +81,45 @@ void Label::setText(const std::string& text)
 	{
 		vertices.push_back(penX + glyphInfos[c].offsetX);
 		vertices.push_back(penY + glyphInfos[c].offsetY - glyphInfos[c].height);
+		vertices.push_back(glyphInfos[c].x0);
+		vertices.push_back(glyphInfos[c].y1);
 
 		vertices.push_back(penX + glyphInfos[c].offsetX + glyphInfos[c].width);
 		vertices.push_back(penY + glyphInfos[c].offsetY - glyphInfos[c].height);
+		vertices.push_back(glyphInfos[c].x1);
+		vertices.push_back(glyphInfos[c].y1);
 
 		vertices.push_back(penX + glyphInfos[c].offsetX);
 		vertices.push_back(penY + glyphInfos[c].offsetY);
+		vertices.push_back(glyphInfos[c].x0);
+		vertices.push_back(glyphInfos[c].y0);
 
 		vertices.push_back(penX + glyphInfos[c].offsetX);
 		vertices.push_back(penY + glyphInfos[c].offsetY);
+		vertices.push_back(glyphInfos[c].x0);
+		vertices.push_back(glyphInfos[c].y0);
 
 		vertices.push_back(penX + glyphInfos[c].offsetX + glyphInfos[c].width);
 		vertices.push_back(penY + glyphInfos[c].offsetY);
+		vertices.push_back(glyphInfos[c].x1);
+		vertices.push_back(glyphInfos[c].y0);
 
 		vertices.push_back(penX + glyphInfos[c].offsetX + glyphInfos[c].width);
 		vertices.push_back(penY + glyphInfos[c].offsetY - glyphInfos[c].height);
+		vertices.push_back(glyphInfos[c].x1);
+		vertices.push_back(glyphInfos[c].y1);
 
 		penX += glyphInfos[c].advance;
 	}
 
-	vertexCount = vertices.size() / 2.0;
+	vertexCount = vertices.size() / 4.0;
 
-	for (auto& vertex : vertices)
+	for (int i = 0; i != vertices.size(); ++i)
 	{
-		vertex /= 128.0;
+		if (i % 4 < 2)
+		{
+			vertices[i] /= 1024.0;
+		}
 	}
 
 	glBindVertexArray(vao);

@@ -64,7 +64,7 @@ int main()
     pane.setPosition(0.0, -1.0);
     pane.setSize(0.5, 0.1);
 
-    Label label(0.0, 0.0, "This is sample text");
+    Label label(0.0, 0.0, "Hello World!");
     
     std::optional<Statement> currentStatement;
     Plot plot;

@@ -11,6 +11,7 @@ struct GlyphInfo
 {
 	unsigned int width, height, advance;
 	int offsetX, offsetY;
+	double x0, y0, x1, y1;
 };
 
 class Font

@@ -46,6 +46,13 @@ Font::Font(const FT_Face& face)
 		glyphInfos[c].width = face->glyph->bitmap.width;
 		glyphInfos[c].height = face->glyph->bitmap.rows;
 
+		glyphInfos[c].x0 = penX  / static_cast<double>(width);
+		glyphInfos[c].y0 = penY / static_cast<double>(height);
+
+
+		glyphInfos[c].x1 = (penX + glyphInfos[c].width) / static_cast<double>(width);
+		glyphInfos[c].y1 = (penY + glyphInfos[c].height) / static_cast<double>(height);
+
 		penX += face->glyph->bitmap.width + 1;
 	}
 
