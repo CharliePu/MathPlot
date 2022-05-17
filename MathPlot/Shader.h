@@ -1,16 +1,10 @@
 #pragma once
-#include <fstream>
 #include <map>
-#include <vector>
 #include <string>
-#include <iostream>
 
 #include <glad/glad.h>
-#include <GLFW\glfw3.h>
 
 #include <glm\glm.hpp>
-#include <glm\gtc\matrix_transform.hpp>
-#include <glm\gtc\type_ptr.hpp>
 
 //buffer the location of uniforms
 typedef std::map<std::string, GLuint> UniformBuffer;
@@ -26,14 +20,14 @@ public:
 
 	void use();
 	friend GLuint getUniformLocation(const std::string& name);
-	operator GLuint();
+	operator GLuint() const;
 private:
 	GLuint id;
 	UniformBuffer locationBuffer;
 
 
 	//read-shader functions
-	void readShaderCode(std::string & shaderCode, const std::string & filePath);
+	void readShaderCode(std::string & shaderCode, const std::string & filePath) const;
 	void compileShader(const GLuint & shaderID, const std::string & filePath, const std::string & shaderCode);
 	void linkShader(const GLuint & programID, const GLuint & vertexShaderID, const GLuint & fragmentShaderID);
 };

@@ -27,7 +27,7 @@ double Exponent::evaluate(double x, double y)
 Interval Exponent::evaluateInterval(const Interval& xi, const Interval& yi)
 {
     // Using optimized functions
-    if (auto c = getSecondExpression()->getConstant().value_or(0.0))
+    if (const auto c = getSecondExpression()->getConstant().value_or(0.0))
     {
         double intPart;
         if (std::modf(c, &intPart) == 0.0)

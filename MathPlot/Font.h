@@ -20,11 +20,11 @@ public:
 	Font(const FT_Face &face);
 
 	std::vector<unsigned char> getBitmap();
-	unsigned int getBitmapWidth();
-	unsigned int getBitmapHeight();
+	[[nodiscard]] unsigned int getBitmapWidth() const;
+	[[nodiscard]] unsigned int getBitmapHeight() const;
 	std::unordered_map<char, GlyphInfo> getGlyphInfos();
 
-	void exportBitmap(const std::string& path);
+	void exportBitmap(const std::string& path) const;
 private:
 	std::unordered_map<char, GlyphInfo> glyphInfos;
 	std::vector<unsigned char> bitmap;
@@ -37,7 +37,7 @@ public:
 	FontFactory();
 	~FontFactory();
 
-	std::unique_ptr<Font> createFont(const std::string& path, unsigned int pixelHeight);
+	[[nodiscard]] std::unique_ptr<Font> createFont(const std::string& path, unsigned int pixelHeight) const;
 private:
 	FT_Library library;
 };

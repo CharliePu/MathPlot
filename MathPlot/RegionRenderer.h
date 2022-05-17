@@ -11,7 +11,7 @@ class RegionRenderer :
 public:
     RegionRenderer();
     void draw() override;
-    void setPixels(const std::vector<unsigned char>& data, size_t width, size_t height);
+    void setPixels(const std::vector<unsigned char>& data, size_t width, size_t height) const;
 private:
     Shader shader;
     unsigned int vao, vbo, textureId, transformLoc;

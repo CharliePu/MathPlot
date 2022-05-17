@@ -10,7 +10,7 @@ public:
 	void move(double x, double y);
 	void zoom(double x, double y, double s);
 	void resetTransform();
-	glm::mat4 getTransMat();
+	[[nodiscard]] glm::mat4 getTransMat() const;
 private:
 	glm::mat4 transMat;
 	double netScale;

@@ -1,10 +1,12 @@
 #include "Label.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 void Label::clickCallback()
 {
 }
 
-bool Label::isClicked(double x, double y)
+bool Label::isClicked(double mouseX, double mouseY)
 {
 	return false;
 }
@@ -38,7 +40,8 @@ void Label::update(int windowWidth, int windowHeight)
 {
 }
 
-Label::Label(): shader(R"(.\shaders\label.vert)", R"(.\shaders\label.frag)"), font(FontFactory().createFont("./fonts/arial.ttf", 64))
+Label::Label(): font(FontFactory().createFont("./fonts/arial.ttf", 64)),
+                shader(R"(.\shaders\label.vert)", R"(.\shaders\label.frag)")
 {
 }
 
@@ -50,7 +53,7 @@ Label::Label(double x, double y, const std::string& text) : Label()
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), NULL);
+	glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), nullptr);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), (void *)(2 * sizeof(double)));
 

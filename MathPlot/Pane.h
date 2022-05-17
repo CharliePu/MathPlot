@@ -2,14 +2,12 @@
 #include "Widget.h"
 #include "Shader.h"
 
-#include <glm/mat4x4.hpp>
-
 class Pane :
     public Widget
 {
 public:
 	void clickCallback() override;
-	bool isClicked(double x, double y) override;
+	bool isClicked(double mouseX, double mouseY) override;
 	void typeCallback(char c) override;
 	void typeUnfocusCallback() override;
 	void draw() override;

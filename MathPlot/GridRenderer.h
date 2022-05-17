@@ -1,7 +1,6 @@
 #pragma once
 #include "Drawable.h"
 #include "Shader.h"
-#include "Transformable.h"
 
 class Plot;
 
@@ -12,7 +11,7 @@ public:
     GridRenderer();
 
 	void draw() override;
-    void updatePlot(const Plot& plot);
+    void updatePlot(const Plot& plot) const;
 private:
     unsigned int vao, vbo;
     Shader shader;

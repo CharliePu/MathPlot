@@ -161,7 +161,6 @@
     <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="RegionRenderer.cpp" />
     <ClCompile Include="Drawable.cpp" />
-    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Statement.cpp" />
     <ClCompile Include="StatementParser.cpp" />
@@ -193,7 +192,6 @@
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="RegionRenderer.h" />
     <ClInclude Include="Drawable.h" />
-    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Statement.h" />
     <ClInclude Include="StatementParser.h" />

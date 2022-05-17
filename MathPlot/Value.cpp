@@ -1,6 +1,5 @@
 #include "Value.h"
 
-#include "Constant.h"
 #include "X.h"
 #include "Y.h"
 

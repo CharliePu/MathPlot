@@ -1,12 +1,3 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include <iostream>
-#include <thread>
-#include <atomic>
-#include <mutex>
-#include <condition_variable>
-
 #include "Program.h"
 #include "Controller.h"
 

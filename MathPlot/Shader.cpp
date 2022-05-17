@@ -1,12 +1,17 @@
 #include "Shader.h"
 
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <glm/gtc/type_ptr.hpp>
+
 Shader* currentShader;
 
 Shader::Shader(const char* vertexFilePath, const char* fragmentFilePath)
 {
 	//create the shaders
-	auto vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	auto fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+	const auto vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	const auto fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	//read the shader code
 	std::string vertexShaderCode, fragmentShaderCode;
@@ -18,7 +23,7 @@ Shader::Shader(const char* vertexFilePath, const char* fragmentFilePath)
 	compileShader(fragmentShaderID, fragmentFilePath, fragmentShaderCode);
 
 	//link the shaders
-	auto programID = glCreateProgram();
+	const auto programID = glCreateProgram();
 	linkShader(programID, vertexShaderID, fragmentShaderID);
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);
@@ -40,12 +45,12 @@ void Shader::use()
 	currentShader = this;
 }
 
-Shader::operator GLuint()
+Shader::operator GLuint() const
 {
 	return id;
 }
 
-void Shader::readShaderCode(std::string &shaderCode, const std::string &filePath)
+void Shader::readShaderCode(std::string &shaderCode, const std::string &filePath) const
 {
 
 	std::ifstream shaderStream(filePath, std::ios::in);
@@ -67,7 +72,7 @@ void Shader::compileShader(const GLuint &shaderID, const std::string &filePath, 
 {
 	//compile the shader
 	char const* sourcePointer = shaderCode.c_str();
-	glShaderSource(shaderID, 1, &sourcePointer, NULL);
+	glShaderSource(shaderID, 1, &sourcePointer, nullptr);
 	glCompileShader(shaderID);
 
 	//check the shader
@@ -75,10 +80,10 @@ void Shader::compileShader(const GLuint &shaderID, const std::string &filePath, 
 	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &result);
 	glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
 	std::vector<GLchar> shaderErrorMessage(infoLogLength + 1);//provide at least one space to prevent access violent
-	glGetShaderInfoLog(shaderID, infoLogLength, NULL, &shaderErrorMessage[0]);
+	glGetShaderInfoLog(shaderID, infoLogLength, nullptr, &shaderErrorMessage[0]);
 	if (shaderErrorMessage[0])
 	{
-		std::cerr << "Compile shader source:" + (std::string)&shaderErrorMessage[0] << std::endl;
+		std::cerr << "Compile shader source:" + static_cast<std::string>(&shaderErrorMessage[0]) << std::endl;
 	}
 }
 
@@ -94,10 +99,10 @@ void Shader::linkShader(const GLuint &programID, const GLuint &vertexShaderID, c
 	glGetProgramiv(programID, GL_LINK_STATUS, &result);
 	glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &infoLogLength);
 	std::vector<GLchar> programErrorMessage(infoLogLength > 1 ? infoLogLength : 1);
-	glGetProgramInfoLog(programID, infoLogLength, NULL, &programErrorMessage[0]);
+	glGetProgramInfoLog(programID, infoLogLength, nullptr, &programErrorMessage[0]);
 	if (programErrorMessage[0])
 	{
-		std::cerr << ("Linking shader program: " + (std::string)&programErrorMessage[0]) << std::endl;;
+		std::cerr << ("Linking shader program: " + static_cast<std::string>(&programErrorMessage[0])) << std::endl;;
 	}
 }
 

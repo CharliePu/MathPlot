@@ -12,7 +12,7 @@ void Transformable::move(double x, double y)
 
 void Transformable::zoom(double x, double y, double s)
 {
-	double scale = pow(1.1, s);
+	const double scale = pow(1.1, s);
 	netScale *= scale;
 	transMat = glm::translate(glm::scale(glm::translate(transMat, glm::vec3(x, y, 0)), glm::vec3(scale, scale, 1)), glm::vec3(-x, -y, 0));
 }
@@ -23,7 +23,7 @@ void Transformable::resetTransform()
 	netScale = 1.0;
 }
 
-glm::mat4 Transformable::getTransMat()
+glm::mat4 Transformable::getTransMat() const
 {
 	return transMat;
 }

@@ -21,11 +21,11 @@ public:
 	Statement(const Statement &other);
 	Statement &operator=(Statement other);
 
-	std::unique_ptr<Expression> getExpression() const;
-	std::function<bool(double, double)> getComparator() const;
-	std::function<bool(Interval)> getIntervalCertaintyChecker() const;
-	bool evaluate(double x, double y);
-	std::string getString();
+	[[nodiscard]] std::unique_ptr<Expression> getExpression() const;
+	[[nodiscard]] std::function<bool(double, double)> getComparator() const;
+	[[nodiscard]] std::function<bool(Interval)> getIntervalCertaintyChecker() const;
+	[[nodiscard]] bool evaluate(double x, double y) const;
+	[[nodiscard]] std::string getString() const;
 
 private:
 	Relation relation;

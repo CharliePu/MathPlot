@@ -1,11 +1,9 @@
 #include "Rasterizer.h"
 
 #include <array>
-#include <algorithm>
-#include <iostream>
 #include <queue>
 
-Rasterizer::Rasterizer(): thread(&Rasterizer::rasterizeTask, this), debugEnabled(false)
+Rasterizer::Rasterizer(): debugEnabled(false), thread(&Rasterizer::rasterizeTask, this)
 {
 }
 
@@ -74,23 +72,23 @@ void Rasterizer::requestRasterize(Plot plot, int width, int height)
 void Rasterizer::rasterize()
 {
     auto getPixelInterval = [&](Interval interval, double width) {
-        double lowerBound = interval.lower() / width;
-        double upperBound = (interval.upper() + 1) / width;
+	    const double lowerBound = interval.lower() / width;
+	    const double upperBound = (interval.upper() + 1) / width;
 
         return Interval(lowerBound, upperBound);
     };
 
     auto mapToInterval = [&](Interval normalizedInterval, Interval mappedRange) {
-        double scale = boost::numeric::width(mappedRange);
-        double offset = mappedRange.lower();
+	    const double scale = boost::numeric::width(mappedRange);
+	    const double offset = mappedRange.lower();
 
         return Interval(normalizedInterval.lower() * scale + offset, normalizedInterval.upper() * scale + offset);
     };
 
 
-    auto expression = plot.getStatement().getExpression();
-    auto certaintyCheck = plot.getStatement().getIntervalCertaintyChecker();
-    auto comparator = plot.getStatement().getComparator();
+    const auto expression = plot.getStatement().getExpression();
+    const auto certaintyCheck = plot.getStatement().getIntervalCertaintyChecker();
+    const auto comparator = plot.getStatement().getComparator();
 
     std::queue<IntervalNode*> nodeQueue;
 
@@ -101,7 +99,7 @@ void Rasterizer::rasterize()
 
     while (!nodeQueue.empty())
     {
-        auto node = nodeQueue.front();
+	    const auto node = nodeQueue.front();
         nodeQueue.pop();
 
         Interval mappedXi = mapToInterval(getPixelInterval(node->xi, width), Interval(plot.getXMin(), plot.getXMax()));
@@ -113,10 +111,10 @@ void Rasterizer::rasterize()
 
 
         // Blending lower bound and upper bound values
-        double lbVal = comparator(evaluatedInterval.lower(), 0.0);
-        double lbRat = abs(evaluatedInterval.lower()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
-        double ubVal = comparator(evaluatedInterval.upper(), 0.0);
-        double ubRat = abs(evaluatedInterval.upper()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
+	    const double lbVal = comparator(evaluatedInterval.lower(), 0.0);
+	    const double lbRat = abs(evaluatedInterval.lower()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
+	    const double ubVal = comparator(evaluatedInterval.upper(), 0.0);
+	    const double ubRat = abs(evaluatedInterval.upper()) / (abs(evaluatedInterval.lower()) + abs(evaluatedInterval.upper()));
         node->value = lbVal * lbRat + ubVal * ubRat;
 
         if (certaintyCheck(evaluatedInterval)) {
@@ -181,7 +179,7 @@ void Rasterizer::rasterize()
     }
 }
 
-double Rasterizer::getPixel(int x, int y)
+double Rasterizer::getPixel(int x, int y) const
 {
     auto currNode = rootNode.get();
 
@@ -203,7 +201,7 @@ double Rasterizer::getPixel(int x, int y)
     return 0.0;
 }
 
-bool Rasterizer::checkDebugFrame(int x, int y)
+bool Rasterizer::checkDebugFrame(int x, int y) const
 {
     auto currNode = rootNode.get();
 
@@ -245,12 +243,12 @@ std::vector<unsigned char> Rasterizer::getData()
     return pixels;
 }
 
-size_t Rasterizer::getWidth()
+size_t Rasterizer::getWidth() const
 {
     return width;
 }
 
-size_t Rasterizer::getHeight()
+size_t Rasterizer::getHeight() const
 {
     return height;
 }

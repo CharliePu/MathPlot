@@ -3,7 +3,7 @@
 
 #include "ExpressionParser.h"
 
-std::optional<Statement> StatementParser::parse(const std::string& s)
+std::optional<Statement> StatementParser::parse(const std::string& s) const
 {
     std::unordered_map<Relation, std::string> m {
         { Relation::greaterEqual, ">="},
@@ -14,10 +14,10 @@ std::optional<Statement> StatementParser::parse(const std::string& s)
     };
 
     size_t operatorPos = 0;
-    Relation relation;
+    Relation relation = Relation::equal;
     for (auto &pair : m)
     {
-        auto pos = s.find(pair.second);
+	    const auto pos = s.find(pair.second);
         if (pos != s.npos)
         {
             relation = pair.first;

@@ -3,17 +3,12 @@
 #include <string>
 
 #include "Constant.h"
-#include "X.h"
-#include "Y.h"
 #include "Plus.h"
-#include "Subtract.h"
-#include "Divide.h"
-#include "Multiply.h"
 
 std::unique_ptr<Expression> ExpressionParser::parse(std::string exp)
 {
 	// remove spaces
-	exp.erase(std::remove(exp.begin(), exp.end(), ' '), exp.end());
+	std::erase(exp, ' ');
 
 	if (exp.empty())
 	{
@@ -156,7 +151,7 @@ std::unique_ptr<Expression> ExpressionParser::parse(std::string exp)
 	}
 }
 
-double ExpressionParser::extractNumber(const std::string& exp, int& i)
+double ExpressionParser::extractNumber(const std::string& exp, int& i) const
 {
 	if ((i > exp.size() || exp[i] < '0' || exp[i] > '9') && exp[i] != '.')
 	{
@@ -179,9 +174,9 @@ double ExpressionParser::extractNumber(const std::string& exp, int& i)
 		}
 		j++;
 	}
-	
-	std::string s = exp.substr(i, j);
-	double d = std::stod(s);
+
+	const std::string s = exp.substr(i, j);
+	const double d = std::stod(s);
 
 	i += j;
 

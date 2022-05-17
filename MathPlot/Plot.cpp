@@ -32,7 +32,7 @@ void Plot::setTargetXRange(double xMin, double xMax)
 {
 	xmin = xMin;
 	xmax = xMax;
-	auto deltaY = ((xmax - xmin) / ratio - (ymax - ymin)) / 2.0;
+	const auto deltaY = ((xmax - xmin) / ratio - (ymax - ymin)) / 2.0;
 	ymin -= deltaY;
 	ymax += deltaY;
 }
@@ -41,7 +41,7 @@ void Plot::setTargetYRange(double yMin, double yMax)
 {
 	ymin = yMin;
 	ymax = yMax;
-	auto deltaX = ((ymax - ymin) * ratio - (xmax - xmin)) / 2.0;
+	const auto deltaX = ((ymax - ymin) * ratio - (xmax - xmin)) / 2.0;
 	xmin -= deltaX;
 	xmax += deltaX;
 }
@@ -97,7 +97,7 @@ void Plot::move(double x, double y)
 
 void Plot::zoom(double cx, double cy, double s)
 {
-	double scale = pow(1.1, s);
+	const double scale = pow(1.1, s);
 	xmin = (xmin - cx) * scale + cx;
 	xmax = (xmax - cx) * scale + cx;
 	ymin = (ymin - cy) * scale + cy;

@@ -26,8 +26,8 @@ public:
 
 	void toggleDebug();
 
-	size_t getWidth();
-	size_t getHeight();
+	size_t getWidth() const;
+	size_t getHeight() const;
 
 private:
 
@@ -35,9 +35,9 @@ private:
 
 	void rasterize();
 
-	double getPixel(int x, int y);
+	double getPixel(int x, int y) const;
 
-	bool checkDebugFrame(int x, int y);
+	bool checkDebugFrame(int x, int y) const;
 
 	std::atomic_bool threadShouldClose;
 	bool requestReady, dataReady;

@@ -1,8 +1,7 @@
 #include "Divide.h"
 
 Divide::Divide()
-{
-}
+= default;
 
 Divide::Divide(std::unique_ptr<Expression>&& l, std::unique_ptr<Expression>&& r) :
     Operator(std::move(l), std::move(r))

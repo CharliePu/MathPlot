@@ -10,7 +10,7 @@ Font::Font(const FT_Face& face)
 {
 	constexpr unsigned int characterSize = 128;
 
-	unsigned int charsPerRow = std::ceil(std::sqrt(characterSize));
+	const unsigned int charsPerRow = std::ceil(std::sqrt(characterSize));
 	width = (1 + face->size->metrics.height / 64) * charsPerRow;
 	width = std::bit_ceil(width); // Round up to nearest power of 2
 	height = width;
@@ -29,12 +29,12 @@ Font::Font(const FT_Face& face)
 
 		FT_Load_Char(face, c, FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
 
-		for (int row = 0; row != face->glyph->bitmap.rows; ++row)
+		for (unsigned int row = 0; row != face->glyph->bitmap.rows; ++row)
 		{
-			for (int col = 0; col != face->glyph->bitmap.width; ++col)
+			for (unsigned int col = 0; col != face->glyph->bitmap.width; ++col)
 			{
-				int x = penX + col;
-				int y = penY + row;
+				const unsigned int x = penX + col;
+				const unsigned int y = penY + row;
 				bitmap[y * width + x] = face->glyph->bitmap.buffer[row * face->glyph->bitmap.pitch + col];
 			}
 		}
@@ -64,12 +64,12 @@ std::vector<unsigned char> Font::getBitmap()
 	return bitmap;
 }
 
-unsigned int Font::getBitmapWidth()
+unsigned int Font::getBitmapWidth() const
 {
 	return width;
 }
 
-unsigned int Font::getBitmapHeight()
+unsigned int Font::getBitmapHeight() const
 {
 	return height;
 }
@@ -79,7 +79,7 @@ std::unordered_map<char, GlyphInfo> Font::getGlyphInfos()
 	return glyphInfos;
 }
 
-void Font::exportBitmap(const std::string& path)
+void Font::exportBitmap(const std::string& path) const
 {
 	std::vector<unsigned char> data;
 	data.resize(width * height * 4);
@@ -113,7 +113,7 @@ FontFactory::~FontFactory()
 	FT_Done_FreeType(library);
 }
 
-std::unique_ptr<Font> FontFactory::createFont(const std::string& path, unsigned int pixelHeight)
+std::unique_ptr<Font> FontFactory::createFont(const std::string& path, unsigned int pixelHeight) const
 {
 	FT_Face face;
 	FT_New_Face(library, path.c_str(), 0, &face);

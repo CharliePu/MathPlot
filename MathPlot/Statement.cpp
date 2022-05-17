@@ -5,7 +5,7 @@
 #include "Subtract.h"
 
 Statement::Statement(std::unique_ptr<Expression>&& lhs, Relation relation, std::unique_ptr<Expression>&& rhs):
-	lhs(std::move(lhs)), relation(relation), rhs(std::move(rhs))
+	relation(relation), lhs(std::move(lhs)), rhs(std::move(rhs))
 {
 	if (!this->lhs || !this->rhs)
 	{
@@ -13,7 +13,7 @@ Statement::Statement(std::unique_ptr<Expression>&& lhs, Relation relation, std::
 	}
 }
 
-Statement::Statement(const Statement& other): lhs(other.lhs->clone()), rhs(other.rhs->clone()), relation(other.relation)
+Statement::Statement(const Statement& other): relation(other.relation), lhs(other.lhs->clone()), rhs(other.rhs->clone())
 {
 }
 
@@ -69,12 +69,12 @@ std::function<bool(Interval)> Statement::getIntervalCertaintyChecker() const
 	}
 }
 
-bool Statement::evaluate(double x, double y)
+bool Statement::evaluate(double x, double y) const
 {
 	return getComparator()(getExpression()->evaluate(x, y), 0.0);
 }
 
-std::string Statement::getString()
+std::string Statement::getString() const
 {
 	std::string op;
 	switch (relation)

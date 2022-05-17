@@ -1,9 +1,8 @@
 #pragma once
 #include <functional>
-#include <unordered_map>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+
+struct GLFWwindow;
 
 class Program
 {
@@ -19,20 +18,20 @@ public:
 	bool keyPressed(char c);
 
 	bool mouseDragged();
-	double getMouseX();
-	double getMouseY();
-	double getMouseDeltaX();
-	double getMouseDeltaY();
+	[[nodiscard]] double getMouseX() const;
+	[[nodiscard]] double getMouseY() const;
+	[[nodiscard]] double getMouseDeltaX() const;
+	[[nodiscard]] double getMouseDeltaY() const;
 
 	bool mouseScrolled();
 	double getMouseScroll();
 
-	int getWidth();
-	int getHeight();
+	[[nodiscard]] int getWidth() const;
+	[[nodiscard]] int getHeight() const;
 
 	void setOnWindowSizeChange(const std::function<void(int, int)>& f);
 
-	bool shouldClose();
+	[[nodiscard]] bool shouldClose() const;
 private:
 	double prevMouseX, prevMouseY, mouseX, mouseY;
 

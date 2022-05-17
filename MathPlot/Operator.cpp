@@ -7,9 +7,7 @@
 #include "Exponent.h"
 
 Operator::Operator()
-{
-
-}
+= default;
 
 Operator::Operator(std::vector<std::unique_ptr<Expression>>&& exprs): exprs(std::move(exprs))
 {
@@ -26,12 +24,12 @@ Operator::Operator(std::unique_ptr<Expression>&& l, std::unique_ptr<Expression>&
     exprs.emplace_back(std::move(r));
 }
 
-std::vector<std::unique_ptr<Expression>> Operator::cloneExpressions()
+std::vector<std::unique_ptr<Expression>> Operator::cloneExpressions() const
 {
     std::vector<std::unique_ptr<Expression>> newExprs;
-    for (auto& expr : exprs)
+    for (const auto& expr : exprs)
     {
-        newExprs.emplace_back(std::move(expr->clone()));
+        newExprs.emplace_back(expr->clone());
     }
 
     return std::move(newExprs);

@@ -1,9 +1,11 @@
 #include "RegionRenderer.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 RegionRenderer::RegionRenderer():
     shader(R"(.\shaders\region.vert)", R"(.\shaders\region.frag)")
 {
-    double quadVertices[] = {
+	constexpr double quadVertices[] = {
     -1.0,  1.0,  0.0, 1.0,
     -1.0, -1.0,  0.0, 0.0,
      1.0, -1.0,  1.0, 0.0,
@@ -18,7 +20,7 @@ RegionRenderer::RegionRenderer():
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), (void*)0);
+    glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), static_cast<void*>(nullptr));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), (void*)(2 * sizeof(double)));
 
@@ -41,7 +43,7 @@ void RegionRenderer::draw()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void RegionRenderer::setPixels(const std::vector<unsigned char>& data, size_t width, size_t height)
+void RegionRenderer::setPixels(const std::vector<unsigned char>& data, size_t width, size_t height) const
 {
     glBindTexture(GL_TEXTURE_2D, textureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());

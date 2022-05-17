@@ -3,7 +3,6 @@
 #include <string>
 #include <stack>
 
-#include "Operator.h"
 #include "Value.h"
 
 
@@ -12,7 +11,7 @@ class ExpressionParser
 public:
 	std::unique_ptr<Expression> parse(std::string exp);
 private:
-	double extractNumber(const std::string& exp, int& i);
+	double extractNumber(const std::string& exp, int& i) const;
 	bool isNumber(char c);
 	bool isOperator(char c);
 	bool isUnkown(char c);

@@ -5,7 +5,7 @@
 GridRenderer::GridRenderer():
 	shader(R"(.\shaders\grid.vert)", R"(.\shaders\grid.frag)")
 {
-    double vertices[] = {
+	constexpr double vertices[] = {
         -1.0, 0.0, 1.0, 0.0,
         0.0, -1.0, 0.0, 1.0
     };
@@ -17,7 +17,7 @@ GridRenderer::GridRenderer():
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 2 * sizeof(double), (void*)0);
+    glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 2 * sizeof(double), static_cast<void*>(nullptr));
 }
 
 void GridRenderer::draw()
@@ -28,12 +28,12 @@ void GridRenderer::draw()
     glDrawArrays(GL_LINES, 0, 4);
 }
 
-void GridRenderer::updatePlot(const Plot& plot)
+void GridRenderer::updatePlot(const Plot& plot) const
 {
-    double xPos = (0 - plot.getXMin()) / plot.getWidth() * 2.0 - 1.0;
-    double yPos = (0 - plot.getYMin()) / plot.getHeight() * 2.0 - 1.0;
+	const double xPos = (0 - plot.getXMin()) / plot.getWidth() * 2.0 - 1.0;
+	const double yPos = (0 - plot.getYMin()) / plot.getHeight() * 2.0 - 1.0;
 
-    double vertices[] = {
+	const double vertices[] = {
     -1.0, yPos, 1.0, yPos,
     xPos, -1.0, xPos, 1.0
     };

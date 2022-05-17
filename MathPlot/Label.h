@@ -13,7 +13,7 @@ class Label :
 {
 public:
 	void clickCallback() override;
-	bool isClicked(double x, double y) override;
+	bool isClicked(double mouseX, double mouseY) override;
 	void typeCallback(char c) override;
 	void typeUnfocusCallback() override;
 	void draw() override;

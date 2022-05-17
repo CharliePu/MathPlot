@@ -1,11 +1,13 @@
 #include "Pane.h"
+
+#include <vector>
 #include <glm/gtc/type_ptr.hpp>
 
 void Pane::clickCallback()
 {
 }
 
-bool Pane::isClicked(double x, double y)
+bool Pane::isClicked(double mouseX, double mouseY)
 {
     return false;
 }
@@ -38,8 +40,9 @@ void Pane::update(int windowWidth, int windowHeight)
 {
 }
 
-Pane::Pane(double x, double y, double width, double height): width(width), height(height),
-shader(R"(.\shaders\pane.vert)", R"(.\shaders\pane.frag)")
+Pane::Pane(double x, double y, double width, double height): shader(R"(.\shaders\pane.vert)", R"(.\shaders\pane.frag)"),
+                                                             width(width),
+                                                             height(height)
 {
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);

@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include <optional>
 
 #include "Statement.h"
@@ -9,22 +8,22 @@ class Plot
 public:
 	Plot();
 	Plot(const Statement& statement, double xmin, double xmax, double ymin, double ymax);
-	Statement getStatement() const;
+	[[nodiscard]] Statement getStatement() const;
 
 	void setStatement(const std::optional<Statement>& statement);
 	void setTargetXRange(double xMin, double xMax);
 	void setTargetYRange(double yMin, double yMax);
 	void setAspectRatio(double ratio);
 
-	bool empty() const;
+	[[nodiscard]] bool empty() const;
 
-	double getXMin() const;
-	double getXMax() const;
-	double getYMin() const;
-	double getYMax() const;
+	[[nodiscard]] double getXMin() const;
+	[[nodiscard]] double getXMax() const;
+	[[nodiscard]] double getYMin() const;
+	[[nodiscard]] double getYMax() const;
 
-	double getWidth() const;
-	double getHeight() const;
+	[[nodiscard]] double getWidth() const;
+	[[nodiscard]] double getHeight() const;
 
 	void move(double x, double y);
 	void zoom(double cx, double cy, double s);

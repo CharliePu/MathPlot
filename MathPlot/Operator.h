@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include <string>
 
 #include "Expression.h"
 
@@ -14,7 +13,7 @@ public:
     Operator(std::unique_ptr<Expression>&& expr);
     Operator(std::unique_ptr<Expression>&& l, std::unique_ptr<Expression>&& r);
 
-    std::vector<std::unique_ptr<Expression>> cloneExpressions();
+    [[nodiscard]] std::vector<std::unique_ptr<Expression>> cloneExpressions() const;
 
     std::unique_ptr<Expression>& getFirstExpression();
     std::unique_ptr<Expression>& getSecondExpression();

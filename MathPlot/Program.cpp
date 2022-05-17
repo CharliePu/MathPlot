@@ -1,5 +1,8 @@
 #include "Program.h"
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 std::function<void(int, int)> sizeChangeFunction;
 
 bool scrolled;
@@ -44,7 +47,7 @@ Program::Program()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(screenWidth, screenHeight, title, NULL, NULL);
+    window = glfwCreateWindow(screenWidth, screenHeight, title, nullptr, nullptr);
     if (!window)
     {
         glfwTerminate();
@@ -54,7 +57,7 @@ Program::Program()
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSwapInterval(1);
     
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
     {
         
     }
@@ -103,22 +106,22 @@ bool Program::mouseDragged()
     return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && mouseX != prevMouseX && mouseY != prevMouseY;
 }
 
-double Program::getMouseX()
+double Program::getMouseX() const
 {
     return mouseX;
 }
 
-double Program::getMouseY()
+double Program::getMouseY() const
 {
     return mouseY;
 }
 
-double Program::getMouseDeltaX()
+double Program::getMouseDeltaX() const
 {
     return mouseX - prevMouseX;
 }
 
-double Program::getMouseDeltaY()
+double Program::getMouseDeltaY() const
 {
     return mouseY - prevMouseY;
 }
@@ -134,14 +137,14 @@ double Program::getMouseScroll()
     return scrollY;
 }
 
-int Program::getWidth()
+int Program::getWidth() const
 {
     int r;
     glfwGetFramebufferSize(window, &r, nullptr);
     return r;
 }
 
-int Program::getHeight()
+int Program::getHeight() const
 {
     int r;
     glfwGetFramebufferSize(window, nullptr, &r);
@@ -153,7 +156,7 @@ void Program::setOnWindowSizeChange(const std::function<void(int, int)>& f)
     sizeChangeFunction = f;
 }
 
-bool Program::shouldClose()
+bool Program::shouldClose() const
 {
     glfwSwapBuffers(window);
     glfwPollEvents();
