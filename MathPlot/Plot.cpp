@@ -23,7 +23,7 @@ Statement Plot::getStatement() const
 	return statement.value();
 }
 
-void Plot::setStatement(const Statement& statement)
+void Plot::setStatement(const std::optional<Statement>& statement)
 {
 	this->statement = statement;
 }

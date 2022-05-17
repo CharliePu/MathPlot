@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="Absolute.cpp" />
     <ClCompile Include="Constant.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Divide.cpp" />
     <ClCompile Include="Exponent.cpp" />
     <ClCompile Include="Expression.cpp" />
@@ -177,6 +178,7 @@
   <ItemGroup>
     <ClInclude Include="Absolute.h" />
     <ClInclude Include="Constant.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="Divide.h" />
     <ClInclude Include="Exponent.h" />
     <ClInclude Include="Expression.h" />

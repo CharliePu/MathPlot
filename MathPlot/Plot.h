@@ -11,7 +11,7 @@ public:
 	Plot(const Statement& statement, double xmin, double xmax, double ymin, double ymax);
 	Statement getStatement() const;
 
-	void setStatement(const Statement& statement);
+	void setStatement(const std::optional<Statement>& statement);
 	void setTargetXRange(double xMin, double xMax);
 	void setTargetYRange(double yMin, double yMax);
 	void setAspectRatio(double ratio);
