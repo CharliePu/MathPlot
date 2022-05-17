@@ -22,19 +22,19 @@ Shader::Shader(const char* vertexFilePath, const char* fragmentFilePath)
 	linkShader(programID, vertexShaderID, fragmentShaderID);
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);
-	ID = programID;
+	id = programID;
 }
 
 Shader::~Shader()
 {
 	//delete shader program
-	glDeleteProgram(this->ID);
+	glDeleteProgram(this->id);
 }
 
 void Shader::use()
 {
 	//bind the shader
-	glUseProgram(ID);
+	glUseProgram(id);
 
 	//update current shader
 	currentShader = this;
@@ -42,7 +42,7 @@ void Shader::use()
 
 Shader::operator GLuint()
 {
-	return ID;
+	return id;
 }
 
 void Shader::readShaderCode(std::string &shaderCode, const std::string &filePath)

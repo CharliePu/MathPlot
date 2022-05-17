@@ -121,7 +121,6 @@ int main()
         if (program.mouseDragged())
         {
             plot.move(program.getMouseDeltaX() * (plot.getXMax() - plot.getXMin()), program.getMouseDeltaY() * (plot.getYMax() - plot.getYMin()));
-            gridRenderer.updatePlot(plot);
 
             regionRenderer.move(program.getMouseDeltaX() * 2, -program.getMouseDeltaY() * 2);
 
@@ -132,11 +131,12 @@ int main()
             plot.zoom(plot.getXMin() + program.getMouseX() * (plot.getXMax() - plot.getXMin()),
                 plot.getYMax() - program.getMouseY() * (plot.getYMax() - plot.getYMin()),
                 -program.getMouseScroll());
-            gridRenderer.updatePlot(plot);
 
             regionRenderer.zoom(program.getMouseX() * 2 - 1, -program.getMouseY() * 2 + 1, program.getMouseScroll());
             rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
         }
+
+        gridRenderer.updatePlot(plot);
     }
 
     threadShouldClose = true;

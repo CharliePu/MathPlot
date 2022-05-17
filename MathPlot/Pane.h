@@ -8,13 +8,13 @@ class Pane :
     public Widget
 {
 public:
-    virtual void clickCallback() override;
-    virtual bool isClicked(double x, double y) override;
-    virtual void typeCallback(char c) override;
-    virtual void typeUnfocusCallback() override;
-    virtual void draw() override;
-    virtual void setPosition(double x, double y) override;
-    virtual void update(int windowWidth, int windowHeight) override;
+	void clickCallback() override;
+	bool isClicked(double x, double y) override;
+	void typeCallback(char c) override;
+	void typeUnfocusCallback() override;
+	void draw() override;
+	void setPosition(double x, double y) override;
+	void update(int windowWidth, int windowHeight) override;
 
     Pane(double x, double y, double width = 0.2, double height = 0.1);
 

@@ -28,7 +28,7 @@ public:
 	friend GLuint getUniformLocation(const std::string& name);
 	operator GLuint();
 private:
-	GLuint ID;
+	GLuint id;
 	UniformBuffer locationBuffer;
 
 

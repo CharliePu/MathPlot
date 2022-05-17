@@ -1,9 +1,12 @@
 #pragma once
-#include "Renderer.h"
+#include "Drawable.h"
+#include "Shader.h"
+#include "Transformable.h"
+
 class Plot;
 
 class GridRenderer :
-    public Renderer
+    public Drawable
 {
 public:
     GridRenderer();
@@ -11,7 +14,7 @@ public:
 	void draw() override;
     void updatePlot(const Plot& plot);
 private:
-    unsigned int vao, vbo, transformLoc;
+    unsigned int vao, vbo;
     Shader shader;
 };
 

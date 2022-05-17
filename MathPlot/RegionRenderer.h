@@ -1,11 +1,16 @@
 #pragma once
-#include "Renderer.h"
+#include <vector>
+
+#include "Drawable.h"
+#include "Shader.h"
+#include "Transformable.h"
+
 class RegionRenderer :
-    public Renderer
+    public Drawable, public Transformable
 {
 public:
     RegionRenderer();
-    virtual void draw() override;
+    void draw() override;
     void setPixels(const std::vector<unsigned char>& data, size_t width, size_t height);
 private:
     Shader shader;

@@ -6,10 +6,10 @@ class Divide :
 public:
     Divide();
     Divide(std::unique_ptr<Expression>&& l, std::unique_ptr<Expression>&& r);
-    virtual std::unique_ptr<Expression> clone() override;
-    virtual double evaluate(double x, double y) override;
-    virtual Interval evaluateInterval(const Interval& xi, const Interval& yi) override;
-    virtual std::string getString() override;
-    virtual std::optional<double> getConstant() override;
+    std::unique_ptr<Expression> clone() override;
+    double evaluate(double x, double y) override;
+    Interval evaluateInterval(const Interval& xi, const Interval& yi) override;
+    std::string getString() override;
+    std::optional<double> getConstant() override;
 private:
 };

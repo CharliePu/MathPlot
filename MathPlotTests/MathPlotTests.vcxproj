@@ -101,7 +101,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;..\MathPlot\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Divide.obj;Multiply.obj;Operator.obj;Plus.obj;Subtract.obj;Constant.obj;Value.obj;X.obj;Y.obj;Expression.obj;ExpressionParser.obj;Point.obj;Statement.obj;StatementParser.obj;Exponent.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Divide.obj;Multiply.obj;Operator.obj;Plus.obj;Subtract.obj;Constant.obj;Value.obj;X.obj;Y.obj;Expression.obj;ExpressionParser.obj;Statement.obj;StatementParser.obj;Exponent.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -160,7 +160,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;..\MathPlot\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Divide.obj;Multiply.obj;Operator.obj;Plus.obj;Subtract.obj;Constant.obj;Value.obj;X.obj;Y.obj;Expression.obj;ExpressionParser.obj;Point.obj;Statement.obj;StatementParser.obj;Exponent.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Divide.obj;Multiply.obj;Operator.obj;Plus.obj;Subtract.obj;Constant.obj;Value.obj;X.obj;Y.obj;Expression.obj;ExpressionParser.obj;Statement.obj;StatementParser.obj;Exponent.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
