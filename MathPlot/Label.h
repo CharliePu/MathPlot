@@ -22,8 +22,9 @@ public:
 
     Label();
     Label(double x, double y, const std::string& text);
+	void generateVertices();
 
-    void setText(const std::string& text);
+	void setText(const std::string& text);
 
 private:
     std::string text;
@@ -31,13 +32,14 @@ private:
 
 
     Shader shader;
-    double x, y;
+    double x{}, y{};
 
-    unsigned int vbo, vao, textureId;
+    unsigned int vbo{}, vao{}, textureId{};
 
-    int transformLoc, vertexCount;
-    glm::mat4 transformMat;
+    int transformLoc{}, vertexCount{};
+    glm::mat4 transformMat{};
 
     std::vector<double> vertices;
+	double windowRatio;
 };
 

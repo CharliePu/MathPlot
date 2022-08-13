@@ -21,12 +21,12 @@ void Controller::start()
 {
 	while (!program.shouldClose())
 	{
+
 		if (rasterizer.isDataReady())
 		{
 			processRasterizerData();
 		}
-
-
+		
 		if (consoleInputDataReady)
 		{
 			processConsoleInput();
@@ -129,6 +129,7 @@ void Controller::onWindowSizeChange(int width, int height)
 			rasterizer.requestRasterize(plot, width, height);
 		}
 	}
+	label.update(width, height);
 }
 
 void Controller::processRasterizerData()
