@@ -29,6 +29,7 @@ private:
 
 	void processRasterizerData();
 
+	void onMouseClicked();
 	void onMouseDragged();
 	void onMouseScrolled();
 

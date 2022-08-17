@@ -17,6 +17,7 @@ public:
 	bool keyPressing(char c);
 	bool keyPressed(char c);
 
+	bool mouseClicked();
 	bool mouseDragged();
 	[[nodiscard]] double getMouseX() const;
 	[[nodiscard]] double getMouseY() const;

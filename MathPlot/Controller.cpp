@@ -45,6 +45,12 @@ void Controller::start()
 		{
 			onMouseDragged();
 		}
+
+		if (program.mouseClicked())
+		{
+			onMouseClicked();
+		}
+
 		if (program.mouseScrolled())
 		{
 			onMouseScrolled();
@@ -136,6 +142,14 @@ void Controller::processRasterizerData()
 {
 	regionRenderer.resetTransform();
 	regionRenderer.setPixels(rasterizer.getData(), rasterizer.getWidth(), rasterizer.getHeight());
+}
+
+void Controller::onMouseClicked()
+{
+	if (label.isClicked(program.getMouseX(), program.getMouseY()))
+	{
+		std::cout << "label clicked!" << std::endl;
+	}
 }
 
 void Controller::onMouseDragged()

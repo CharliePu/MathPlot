@@ -94,6 +94,11 @@ bool Program::keyPressed(char c)
     return true;
 }
 
+bool Program::mouseClicked()
+{
+    return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+}
+
 bool Program::mouseDragged()
 {
     prevMouseX = mouseX;
