@@ -168,6 +168,7 @@
     <ClCompile Include="Multiply.cpp" />
     <ClCompile Include="Operator.cpp" />
     <ClCompile Include="Plus.cpp" />
+    <ClCompile Include="TextEdit.cpp" />
     <ClCompile Include="Transformable.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClCompile Include="Widget.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="Multiply.h" />
     <ClInclude Include="Operator.h" />
     <ClInclude Include="Plus.h" />
+    <ClInclude Include="TextEdit.h" />
     <ClInclude Include="Transformable.h" />
     <ClInclude Include="Value.h" />
     <ClInclude Include="Widget.h" />

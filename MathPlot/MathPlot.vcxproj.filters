@@ -135,6 +135,9 @@
     <ClCompile Include="Label.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="TextEdit.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Expression.h">
@@ -222,6 +225,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Label.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TextEdit.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>
