@@ -10,11 +10,10 @@ void Transformable::move(double x, double y)
 	transMat = glm::translate(transMat, glm::vec3(x / netScale, y / netScale, 0));
 }
 
-void Transformable::zoom(double x, double y, double s)
+void Transformable::zoom(double centerX, double centerY, double scale)
 {
-	const double scale = pow(1.1, s);
 	netScale *= scale;
-	transMat = glm::translate(glm::scale(glm::translate(transMat, glm::vec3(x, y, 0)), glm::vec3(scale, scale, 1)), glm::vec3(-x, -y, 0));
+	transMat = glm::translate(glm::scale(glm::translate(transMat, glm::vec3(centerX, centerY, 0)), glm::vec3(scale, scale, 1)), glm::vec3(-centerX, -centerY, 0));
 }
 
 void Transformable::resetTransform()

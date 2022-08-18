@@ -91,15 +91,23 @@ void Plot::move(double x, double y)
 {
 	xmin -= x;
 	xmax -= x;
-	ymin += y;
-	ymax += y;
+	ymin -= y;
+	ymax -= y;
 }
 
 void Plot::zoom(double cx, double cy, double s)
 {
-	const double scale = pow(1.1, s);
-	xmin = (xmin - cx) * scale + cx;
-	xmax = (xmax - cx) * scale + cx;
-	ymin = (ymin - cy) * scale + cy;
-	ymax = (ymax - cy) * scale + cy;
+	auto mapNumericRange = [](const double val, const double min1, const double max1, const double min2, const double max2)
+	{
+		return (val - min1) / (max1 - min1) * (max2 - min2) + min2;
+	};
+
+
+	const double x = mapNumericRange(cx, -1, 1, getXMin(), getXMax());
+	const double y = mapNumericRange(cy, -1, 1, getYMin(), getYMax());
+
+	xmin = (xmin - x) / s + x;
+	xmax = (xmax - x) / s + x;
+	ymin = (ymin - y) / s + y;
+	ymax = (ymax - y) / s + y;
 }

@@ -105,8 +105,12 @@ bool Program::mouseDragged()
     prevMouseY = mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
 
-    mouseX /= getWidth();
-    mouseY /= getHeight();
+    // [0, width], [0, height] => [-1.0, 1.0], [-1.0, 1.0]
+    mouseX = 2 * mouseX / getWidth() - 1.0;
+    mouseY = 2 * mouseY / getHeight() - 1.0;
+
+    // y of mouse position is inverted
+    mouseY *= -1;
 
     return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && mouseX != prevMouseX && mouseY != prevMouseY;
 }

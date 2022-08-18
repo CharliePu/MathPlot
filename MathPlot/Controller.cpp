@@ -4,7 +4,9 @@
 
 #include "StatementParser.h"
 
-Controller::Controller(Program& program): program(program), label(-0.95, -0.95, "Press I to plot an equation"),
+Controller::Controller(Program& program): program(program), equationLabel(-0.95, -0.95, "Press I to plot an equation"),
+											rangeLabel(-0.95, 0.9, "x: [-10, 10]; y: [-10, 10]"),
+											mousePosLabel(-0.95, 0.75, "mouse: "),
                                           consoleInputRequested(false)
 {
 	program.setOnWindowSizeChange([&](const int width, const int height) { onWindowSizeChange(width, height); });
@@ -58,7 +60,12 @@ void Controller::start()
 
 		gridRenderer.draw();
 		regionRenderer.draw();
-		label.draw();
+		equationLabel.draw();
+		rangeLabel.draw();
+
+
+		mousePosLabel.setText(std::format("mouse: [{:.2f}, {:.2f}];", program.getMouseX(),program.getMouseY()));
+		mousePosLabel.draw();
 	}
 }
 
@@ -109,11 +116,11 @@ void Controller::processConsoleInput()
 	if (!plot.empty())
 	{
 		rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
-		label.setText(plot.getStatement().getString());
+		equationLabel.setText(plot.getStatement().getString());
 	}
 	else
 	{
-		label.setText("Invalid equation");
+		equationLabel.setText("Invalid equation");
 	}
 }
 
@@ -135,7 +142,7 @@ void Controller::onWindowSizeChange(int width, int height)
 			rasterizer.requestRasterize(plot, width, height);
 		}
 	}
-	label.update(width, height);
+	equationLabel.update(width, height);
 }
 
 void Controller::processRasterizerData()
@@ -146,32 +153,51 @@ void Controller::processRasterizerData()
 
 void Controller::onMouseClicked()
 {
-	if (label.isClicked(program.getMouseX(), program.getMouseY()))
+	if (equationLabel.isClicked(program.getMouseX(), program.getMouseY()))
 	{
-		std::cout << "label clicked!" << std::endl;
+		std::cout << "equationLabel clicked!" << std::endl;
 	}
 }
 
 void Controller::onMouseDragged()
 {
-	plot.move(program.getMouseDeltaX() * (plot.getXMax() - plot.getXMin()),
-	          program.getMouseDeltaY() * (plot.getYMax() - plot.getYMin()));
+	auto scaleByNumericRange = [](const double val, const double min1, const double max1, const double min2, const double max2)
+	{
+		return val / (max1 - min1) * (max2 - min2);
+	};
+	
+	plot.move(
+		scaleByNumericRange(program.getMouseDeltaX(), -1, 1, plot.getXMin(), plot.getXMax()),
+		scaleByNumericRange(program.getMouseDeltaY(), -1, 1, plot.getYMin(), plot.getYMax()));
 
-	regionRenderer.move(program.getMouseDeltaX() * 2, -program.getMouseDeltaY() * 2);
+	regionRenderer.move(program.getMouseDeltaX(), program.getMouseDeltaY());
 
 	rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
 
 	gridRenderer.updatePlot(plot);
+
+	rangeLabel.setText(std::format("x: [{:.2f}, {:.2f}]; y: [{:.2f}, {:.2f}]", plot.getXMin(), plot.getXMax(), plot.getYMin(), plot.getYMax()));
 }
 
 void Controller::onMouseScrolled()
 {
-	plot.zoom(plot.getXMin() + program.getMouseX() * (plot.getXMax() - plot.getXMin()),
-	          plot.getYMax() - program.getMouseY() * (plot.getYMax() - plot.getYMin()),
-	          -program.getMouseScroll());
 
-	regionRenderer.zoom(program.getMouseX() * 2 - 1, -program.getMouseY() * 2 + 1, program.getMouseScroll());
-	rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
+	//plot.zoom(plot.getXMin() + program.getMouseX() * (plot.getXMax() - plot.getXMin()),
+	//          plot.getYMax() - program.getMouseY() * (plot.getYMax() - plot.getYMin()),
+	//          -program.getMouseScroll());
+
+
+	const double x = program.getMouseX();
+	const double y = program.getMouseY();
+	const double scale = pow(1.1, program.getMouseScroll());
+
+	plot.zoom(x, y, scale);
+
+	regionRenderer.zoom(x, y, scale);
+
+	//rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
 
 	gridRenderer.updatePlot(plot);
+
+	rangeLabel.setText(std::format("x: [{:.2f}, {:.2f}]; y: [{:.2f}, {:.2f}]", plot.getXMin(), plot.getXMax(), plot.getYMin(), plot.getYMax()));
 }
