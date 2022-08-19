@@ -2,13 +2,16 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+using std::min;
+using std::max;
+
 void Label::clickCallback()
 {
 }
 
 bool Label::isClicked(double mouseX, double mouseY)
 {
-	return false;
+	return mouseX > boundX0 && mouseX < boundX1 && mouseY > boundY0 && mouseY < boundY1;
 }
 
 void Label::typeCallback(char c)
@@ -38,13 +41,21 @@ void Label::setPosition(double x, double y)
 
 void Label::update(int windowWidth, int windowHeight)
 {
-	this->windowRatio = windowWidth / static_cast<double>(windowHeight);
+	this->windowWidth = windowWidth;
+	this->windowHeight = windowHeight;
 	generateVertices();
 }
 
 Label::Label(): font(FontFactory().createFont("./fonts/arial.ttf", 64)),
                 shader(R"(.\shaders\label.vert)", R"(.\shaders\label.frag)"),
-				windowRatio(1.0)
+				x(0), y(0), boundX0(0), boundX1(0), boundY0(0), boundY1(0),
+                vbo(0), vao(0),
+                textureId(0),
+                transformLoc(0),
+                vertexCount(0),
+                transformMat(),
+                windowWidth(800),
+                windowHeight(800)
 {
 }
 
@@ -85,12 +96,12 @@ void Label::generateVertices()
 	double penX = 0, penY = 0;
 	for (char c : text)
 	{
-		double posX1 = (penX + glyphInfos[c].offsetX) / windowRatio;
+		double posX1 = (penX + glyphInfos[c].offsetX) / windowWidth * windowHeight;
 		double posY1 = penY + glyphInfos[c].offsetY;
 		double texX1 = glyphInfos[c].x0;
 		double texY1 = glyphInfos[c].y1;
 
-		double posX0 = (penX + glyphInfos[c].offsetX + glyphInfos[c].width) / windowRatio;
+		double posX0 = (penX + glyphInfos[c].offsetX + glyphInfos[c].width) / windowWidth * windowHeight;
 		double posY0 = penY + glyphInfos[c].offsetY - glyphInfos[c].height;
 		double texX0 = glyphInfos[c].x1;
 		double texY0 = glyphInfos[c].y0;
@@ -130,6 +141,7 @@ void Label::generateVertices()
 
 	vertexCount = vertices.size() / 4.0;
 
+	// Scale down the text
 	for (int i = 0; i != vertices.size(); ++i)
 	{
 		if (i % 4 < 2)
@@ -137,6 +149,27 @@ void Label::generateVertices()
 			vertices[i] /= 1024.0;
 		}
 	}
+
+	// Update bounds for click detection
+	boundX0 = std::numeric_limits<decltype(boundX0)>::max();
+	boundX1 = std::numeric_limits<decltype(boundX1)>::lowest();
+	boundY0 = std::numeric_limits<decltype(boundY0)>::max();
+	boundY1 = std::numeric_limits<decltype(boundY1)>::lowest();
+	for (int i = 0; i != vertices.size(); )
+	{
+		boundX0 = min(boundX0, vertices[i]);
+		boundX1 = max(boundX1, vertices[i]);
+		boundY0 = min(boundY0, vertices[i + 1]);
+		boundY1 = max(boundY1, vertices[i + 1]);
+		i += 4;
+	}
+
+	const glm::vec4 transformedBound0 = transformMat * glm::vec4(boundX0, boundY0, 0, 1);
+	const glm::vec4 transformedBound1 = transformMat * glm::vec4(boundX1, boundY1, 0, 1);
+	boundX0 = transformedBound0.x;
+	boundY0 = transformedBound0.y;
+	boundX1 = transformedBound1.x;
+	boundY1 = transformedBound1.y;
 
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);

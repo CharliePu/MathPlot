@@ -7,7 +7,6 @@
 
 Controller::Controller(Program& program): program(program), equationLabel(-0.95, -0.95, "Press I to plot an equation"),
 											rangeLabel(-0.95, 0.9, "x: [-10, 10]; y: [-10, 10]"),
-											mousePosLabel(-0.95, 0.75, "mouse: "),
                                           consoleInputRequested(false)
 {
 	program.setOnWindowSizeChange([&](const int width, const int height) { onWindowSizeChange(width, height); });
@@ -63,10 +62,6 @@ void Controller::start()
 		regionRenderer.draw();
 		equationLabel.draw();
 		rangeLabel.draw();
-
-
-		mousePosLabel.setText(std::format("mouse: [{:.2f}, {:.2f}];", program.getMouseX(),program.getMouseY()));
-		mousePosLabel.draw();
 	}
 }
 
@@ -145,7 +140,6 @@ void Controller::onWindowSizeChange(int width, int height)
 	}
 	equationLabel.update(width, height);
 	rangeLabel.update(width, height);
-	mousePosLabel.update(width, height);
 }
 
 void Controller::processRasterizerData()

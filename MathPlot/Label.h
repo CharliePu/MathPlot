@@ -32,14 +32,14 @@ private:
 
 
     Shader shader;
-    double x{}, y{};
+    double x, y, boundX0, boundX1, boundY0, boundY1;
 
-    unsigned int vbo{}, vao{}, textureId{};
+    unsigned int vbo, vao, textureId;
 
-    int transformLoc{}, vertexCount{};
-    glm::mat4 transformMat{};
+    int transformLoc, vertexCount;
+    glm::mat4 transformMat;
 
     std::vector<double> vertices;
-	double windowRatio;
+	double windowWidth, windowHeight;
 };
 

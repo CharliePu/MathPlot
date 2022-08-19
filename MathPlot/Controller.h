@@ -40,7 +40,7 @@ private:
 
 	GridRenderer gridRenderer;
 
-	Label equationLabel, rangeLabel, mousePosLabel;
+	Label equationLabel, rangeLabel;
 	
 	Plot plot;
 
