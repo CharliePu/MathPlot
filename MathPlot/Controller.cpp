@@ -1,6 +1,7 @@
 #include "Controller.h"
 
 #include <iostream>
+#include <format>
 
 #include "StatementParser.h"
 
@@ -143,6 +144,8 @@ void Controller::onWindowSizeChange(int width, int height)
 		}
 	}
 	equationLabel.update(width, height);
+	rangeLabel.update(width, height);
+	mousePosLabel.update(width, height);
 }
 
 void Controller::processRasterizerData()
@@ -182,11 +185,6 @@ void Controller::onMouseDragged()
 void Controller::onMouseScrolled()
 {
 
-	//plot.zoom(plot.getXMin() + program.getMouseX() * (plot.getXMax() - plot.getXMin()),
-	//          plot.getYMax() - program.getMouseY() * (plot.getYMax() - plot.getYMin()),
-	//          -program.getMouseScroll());
-
-
 	const double x = program.getMouseX();
 	const double y = program.getMouseY();
 	const double scale = pow(1.1, program.getMouseScroll());
@@ -195,7 +193,7 @@ void Controller::onMouseScrolled()
 
 	regionRenderer.zoom(x, y, scale);
 
-	//rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
+	rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
 
 	gridRenderer.updatePlot(plot);
 
