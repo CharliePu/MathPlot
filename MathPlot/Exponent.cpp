@@ -26,40 +26,64 @@ double Exponent::evaluate(double x, double y)
 
 Interval Exponent::evaluateInterval(const Interval& xi, const Interval& yi)
 {
-    // Using optimized functions
-    if (const auto c = getSecondExpression()->getConstant().value_or(0.0))
+	Interval base = getFirstExpression()->evaluateInterval(xi, yi);
+    Interval exponent = getSecondExpression()->evaluateInterval(xi, yi);
+
+    auto isWholeNumber = [](double x)
     {
-        double intPart;
-        if (std::modf(c, &intPart) == 0.0)
+        return std::abs(std::round(x) - x) <= std::numeric_limits<double>::epsilon();
+    };
+
+    auto isConstant = [](Interval i)
+    {
+        return width(i) <= std::numeric_limits<double>::epsilon();
+    };
+
+    auto areEqual = [](double x, double y)
+    {
+        return std::abs(x - y) <= std::numeric_limits<double>::epsilon();
+    };
+    
+    if (in_zero(base))
+    {
+        return Interval(-std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
+    }
+    
+    if (isConstant(exponent))
+    {
+        if (base.upper() < 0)
         {
-            if (c == 2.0)
+            if (isWholeNumber(exponent.lower()))
             {
-                return boost::numeric::square(getFirstExpression()->evaluateInterval(xi, yi));
+                const int exponentConstant = static_cast<int>(std::round(exponent.lower()));
+
+                if (exponentConstant == 2)
+                {
+                    return square(base);
+                }
+
+                if (exponentConstant == -1)
+                {
+                    return multiplicative_inverse(base);
+                }
+
+                return pow(base, exponentConstant);
             }
-            else if (c == -1.0)
+
+            if (areEqual(exponent.lower(), 0.5))
             {
-                return multiplicative_inverse(getFirstExpression()->evaluateInterval(xi, yi));
-            }
-            else
-            {
-                return boost::numeric::pow(getFirstExpression()->evaluateInterval(xi, yi), static_cast<int>(c));
+                return sqrt(base);
             }
         }
-        if (c > 0 && c < 1)
+
+        if (exponent.lower() > 0 && exponent.lower() < 1)
         {
-            if (c == 0.5)
-            {
-                std::cout << "Optimized sqrt is used" << std::endl;
-                return boost::numeric::sqrt(getFirstExpression()->evaluateInterval(xi, yi));
-            }
-            else
-            {
-                std::cout << "Optimized nth_root  is used" << std::endl;
-                return boost::numeric::nth_root(getFirstExpression()->evaluateInterval(xi, yi), static_cast<int>(1.0 / c));
-            }
+            auto temp = boost::numeric::nth_root(base, static_cast<int>(std::round(1.0 / exponent.lower())));
+            return temp;
         }
     }
-    return boost::numeric::exp(getFirstExpression()->evaluateInterval(xi, yi) * boost::numeric::log(getSecondExpression()->evaluateInterval(xi, yi)));
+    
+    return boost::numeric::exp(exponent * boost::numeric::log(base));
 }
 
 std::string Exponent::getString()
