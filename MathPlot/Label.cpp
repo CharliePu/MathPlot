@@ -46,20 +46,17 @@ void Label::update(int windowWidth, int windowHeight)
 	generateVertices();
 }
 
-Label::Label(): font(FontFactory().createFont("./fonts/arial.ttf", 64)),
-                shader(R"(.\shaders\label.vert)", R"(.\shaders\label.frag)"),
-				x(0), y(0), boundX0(0), boundX1(0), boundY0(0), boundY1(0),
-                vbo(0), vao(0),
-                textureId(0),
-                transformLoc(0),
-                vertexCount(0),
-                transformMat(),
-                windowWidth(800),
-                windowHeight(800)
-{
-}
-
-Label::Label(double x, double y, const std::string& text) : Label()
+Label::Label(double x, double y, const std::string& text) : font(FontFactory().createFont("./fonts/arial.ttf", 64)),
+                                                            shader(R"(.\shaders\label.vert)",
+                                                                   R"(.\shaders\label.frag)"),
+                                                            x(0), y(0), boundX0(0), boundX1(0), boundY0(0), boundY1(0),
+                                                            vbo(0), vao(0),
+                                                            textureId(0),
+                                                            transformLoc(0),
+                                                            vertexCount(0),
+                                                            transformMat(),
+                                                            windowWidth(800),
+                                                            windowHeight(800)
 {
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -69,13 +66,14 @@ Label::Label(double x, double y, const std::string& text) : Label()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), nullptr);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), (void *)(2 * sizeof(double)));
+	glVertexAttribPointer(1, 2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), (void*)(2 * sizeof(double)));
 
 	transformLoc = glGetUniformLocation(shader, "transMat");
 
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, font->getBitmapWidth(), font->getBitmapHeight(), NULL, GL_RED, GL_UNSIGNED_BYTE, font->getBitmap().data());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, font->getBitmapWidth(), font->getBitmapHeight(), NULL, GL_RED,
+	             GL_UNSIGNED_BYTE, font->getBitmap().data());
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -155,7 +153,7 @@ void Label::generateVertices()
 	boundX1 = std::numeric_limits<decltype(boundX1)>::lowest();
 	boundY0 = std::numeric_limits<decltype(boundY0)>::max();
 	boundY1 = std::numeric_limits<decltype(boundY1)>::lowest();
-	for (int i = 0; i != vertices.size(); )
+	for (int i = 0; i != vertices.size();)
 	{
 		boundX0 = min(boundX0, vertices[i]);
 		boundX1 = max(boundX1, vertices[i]);
@@ -180,4 +178,9 @@ void Label::setText(const std::string& text)
 {
 	this->text = text;
 	generateVertices();
+}
+
+std::string Label::getText()
+{
+	return text;
 }

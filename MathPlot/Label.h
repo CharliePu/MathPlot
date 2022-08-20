@@ -19,14 +19,15 @@ public:
 	void draw() override;
 	void setPosition(double x, double y) override;
 	void update(int windowWidth, int windowHeight) override;
-
-    Label();
+    
     Label(double x, double y, const std::string& text);
-	void generateVertices();
 
 	void setText(const std::string& text);
+	std::string getText();
 
 private:
+    void generateVertices();
+
     std::string text;
     std::unique_ptr<Font> font;
 
