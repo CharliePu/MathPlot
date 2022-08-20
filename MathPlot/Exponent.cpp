@@ -29,9 +29,9 @@ Interval Exponent::evaluateInterval(const Interval& xi, const Interval& yi)
 	Interval base = getFirstExpression()->evaluateInterval(xi, yi);
     Interval exponent = getSecondExpression()->evaluateInterval(xi, yi);
 
-    auto isWholeNumber = [](double x)
+    auto isWholeNumber = [](double x, int tolerance = 1)
     {
-        return std::abs(std::round(x) - x) <= std::numeric_limits<double>::epsilon();
+        return std::abs(std::round(x) - x) <= std::numeric_limits<double>::epsilon() * tolerance;
     };
 
     auto isConstant = [](Interval i)
@@ -75,8 +75,8 @@ Interval Exponent::evaluateInterval(const Interval& xi, const Interval& yi)
                 return sqrt(base);
             }
         }
-
-        if (exponent.lower() > 0 && exponent.lower() < 1)
+        
+        if (exponent.lower() > 0 && exponent.lower() < 1 && isWholeNumber(1.0 / exponent.lower(), 2))
         {
             auto temp = boost::numeric::nth_root(base, static_cast<int>(std::round(1.0 / exponent.lower())));
             return temp;
