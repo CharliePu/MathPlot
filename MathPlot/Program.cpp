@@ -1,5 +1,9 @@
 #include "Program.h"
 
+#include <iostream>
+#include <ostream>
+#include <queue>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -15,7 +19,7 @@ enum class KeyState
     RELEASE = GLFW_RELEASE
 };
 
-std::unordered_map<char, KeyState> keyState;
+std::unordered_map<int, KeyState> keyState;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -32,6 +36,13 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
     scrolled = true;
     scrollY = yoffset;
+}
+
+std::queue<char> textInputQueue;
+
+void characterCallback(GLFWwindow* window, unsigned int codepoint)
+{
+    textInputQueue.push(static_cast<char>(codepoint));
 }
 
 Program& getProgram()
@@ -66,6 +77,8 @@ Program::Program()
 
     glfwSetKeyCallback(window, keyCallback);
 
+    glfwSetCharCallback(window, characterCallback);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -80,18 +93,27 @@ Program::~Program()
 
 bool Program::keyPressing(char c)
 {
-    return keyState.contains(c) && (keyState[c] == KeyState::PRESS || keyState[c] == KeyState::REPEAT);
+    return keyPressing(static_cast<int>(c));
 }
 
 bool Program::keyPressed(char c)
 {
-    if (!keyState.contains(c) || keyState[c] != KeyState::PRESS)
-    {
-        return false;
-    }
+    return keyPressed(static_cast<int>(c));
+}
 
-    keyState[c] = KeyState::REPEAT;
-    return true;
+bool Program::enterPressed()
+{
+    return keyPressed(GLFW_KEY_ENTER);
+}
+
+bool Program::escapePressed()
+{
+    return keyPressed(GLFW_KEY_ESCAPE);
+}
+
+bool Program::backSpacePressed()
+{
+    return keyPressed(GLFW_KEY_BACKSPACE);
 }
 
 bool Program::mouseClicked()
@@ -133,6 +155,18 @@ double Program::getMouseDeltaX() const
 double Program::getMouseDeltaY() const
 {
     return mouseY - prevMouseY;
+}
+
+bool Program::hasTextInput()
+{
+    return !textInputQueue.empty();
+}
+
+char Program::getTextInput()
+{
+    const char c{ textInputQueue.front() };
+    textInputQueue.pop();
+    return c;
 }
 
 bool Program::mouseScrolled()
@@ -177,5 +211,21 @@ bool Program::shouldClose() const
     glClear(GL_COLOR_BUFFER_BIT);
 
     return glfwWindowShouldClose(window);
+}
+
+bool Program::keyPressing(int c)
+{
+    return keyState.contains(c) && (keyState[c] == KeyState::PRESS || keyState[c] == KeyState::REPEAT);
+}
+
+bool Program::keyPressed(int c)
+{
+    if (!keyState.contains(c) || keyState[c] != KeyState::PRESS)
+    {
+        return false;
+    }
+
+    keyState[c] = KeyState::REPEAT;
+    return true;
 }
 

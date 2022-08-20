@@ -9,9 +9,9 @@ void Label::clickCallback()
 {
 }
 
-bool Label::isClicked(double mouseX, double mouseY)
+bool Label::within(double x, double y)
 {
-	return mouseX > boundX0 && mouseX < boundX1 && mouseY > boundY0 && mouseY < boundY1;
+	return x > boundX0 && x < boundX1 && y > boundY0 && y < boundY1;
 }
 
 void Label::typeCallback(char c)

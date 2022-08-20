@@ -10,12 +10,15 @@ public:
 	static constexpr int screenWidth = 800;
 	static constexpr int screenHeight = 800;
 	static constexpr char title[] = "MathPlot";
-
+	
 	Program();
 	~Program();
 	
 	bool keyPressing(char c);
 	bool keyPressed(char c);
+	bool enterPressed();
+	bool escapePressed();
+	bool backSpacePressed();
 
 	bool mouseClicked();
 	bool mouseDragged();
@@ -23,6 +26,9 @@ public:
 	[[nodiscard]] double getMouseY() const;
 	[[nodiscard]] double getMouseDeltaX() const;
 	[[nodiscard]] double getMouseDeltaY() const;
+
+	bool hasTextInput();
+	char getTextInput();
 
 	bool mouseScrolled();
 	double getMouseScroll();
@@ -34,6 +40,9 @@ public:
 
 	[[nodiscard]] bool shouldClose() const;
 private:
+	bool keyPressing(int c);
+	bool keyPressed(int c);
+
 	double prevMouseX, prevMouseY, mouseX, mouseY;
 
 	GLFWwindow* window;

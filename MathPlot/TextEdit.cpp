@@ -1,26 +1,39 @@
 #include "TextEdit.h"
 
-void TextEdit::clickCallback()
+
+TextEdit::TextEdit(double x, double y, const std::string& defaultText): Label(x, y, defaultText), isEditing(false), defaultText(defaultText)
 {
 }
 
-bool TextEdit::isClicked(double mouseX, double mouseY)
+void TextEdit::clickCallback()
 {
-	return Label::isClicked(mouseX, mouseY);
+	isEditing = true;
+	setText("");
 }
 
 void TextEdit::typeCallback(char c)
 {
+	if (isEditing) {
+		if (c == '\b')
+		{
+			std::string s{ getText() };
+			if (!s.empty())
+				s.pop_back();
+			setText(s);
+		}
+		else
+		{
+			setText(getText() + c);
+		}
+	}
 }
 
 void TextEdit::typeUnfocusCallback()
 {
-}
+	isEditing = false;
 
-void TextEdit::setPosition(double x, double y)
-{
-}
-
-void TextEdit::update(int windowWidth, int windowHeight)
-{
+	if (getText().empty())
+	{
+		setText(defaultText);
+	}
 }

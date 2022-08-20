@@ -7,7 +7,7 @@ class Pane :
 {
 public:
 	void clickCallback() override;
-	bool isClicked(double mouseX, double mouseY) override;
+	bool within(double x, double y) override;
 	void typeCallback(char c) override;
 	void typeUnfocusCallback() override;
 	void draw() override;

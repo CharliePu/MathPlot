@@ -4,6 +4,7 @@
 #include "Program.h"
 #include "Rasterizer.h"
 #include "RegionRenderer.h"
+#include "TextEdit.h"
 
 class Controller
 {
@@ -22,7 +23,7 @@ private:
 	void consoleInputTask();
 	void startConsoleInput();
 	void stopConsoleInput();
-	void processConsoleInput();
+	void processEquationInput(const std::string& inputString);
 	void requestConsoleInput();
 
 	void onWindowSizeChange(int width, int height);
@@ -40,7 +41,8 @@ private:
 
 	GridRenderer gridRenderer;
 
-	Label equationLabel, rangeLabel;
+	Label rangeLabel;
+	TextEdit equationTextEdit;
 	
 	Plot plot;
 
@@ -50,5 +52,7 @@ private:
 	std::condition_variable consoleInputRequestedCv;
 	std::mutex consoleInputRequestedMutex;
 	std::string consoleInputString;
+
+	bool isTypingEquation;
 };
 

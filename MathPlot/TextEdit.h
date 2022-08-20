@@ -6,11 +6,14 @@ class TextEdit :
     public Label
 {
 public:
+	TextEdit(double x, double y, const std::string& defaultText);
+
 	void clickCallback() override;
-	bool isClicked(double mouseX, double mouseY) override;
 	void typeCallback(char c) override;
 	void typeUnfocusCallback() override;
-	void setPosition(double x, double y) override;
-	void update(int windowWidth, int windowHeight) override;
+
+private:
+	bool isEditing;
+	std::string defaultText;
 };
 

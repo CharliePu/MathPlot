@@ -5,9 +5,9 @@
 
 #include "StatementParser.h"
 
-Controller::Controller(Program& program): program(program), equationLabel(-0.95, -0.95, "Press I to plot an equation"),
+Controller::Controller(Program& program): program(program), equationTextEdit(-0.95, -0.95, "Click here and type an inequality"),
 											rangeLabel(-0.95, 0.9, "x: [-10, 10]; y: [-10, 10]"),
-                                          consoleInputRequested(false)
+                                          consoleInputRequested(false), isTypingEquation(false)
 {
 	program.setOnWindowSizeChange([&](const int width, const int height) { onWindowSizeChange(width, height); });
 
@@ -23,7 +23,6 @@ void Controller::start()
 {
 	while (!program.shouldClose())
 	{
-
 		if (rasterizer.isDataReady())
 		{
 			processRasterizerData();
@@ -31,16 +30,7 @@ void Controller::start()
 		
 		if (consoleInputDataReady)
 		{
-			processConsoleInput();
-		}
-
-		if (program.keyPressed('I'))
-		{
-			requestConsoleInput();
-		}
-		if (program.keyPressed('D'))
-		{
-			rasterizer.toggleDebug();
+			processEquationInput(consoleInputString);
 		}
 
 		if (program.mouseDragged())
@@ -58,10 +48,44 @@ void Controller::start()
 			onMouseScrolled();
 		}
 
+		if (isTypingEquation)
+		{
+			if (program.hasTextInput())
+			{
+				equationTextEdit.typeCallback(program.getTextInput());
+			}
+
+			// Special handling for removing characters
+			if (program.backSpacePressed())
+			{
+				equationTextEdit.typeCallback('\b');
+			}
+
+			if (program.enterPressed() || program.escapePressed())
+			{
+				equationTextEdit.typeUnfocusCallback();
+				isTypingEquation = false;
+				processEquationInput(equationTextEdit.getText());
+			}
+		}
+		else
+		{
+			if (program.keyPressed('I'))
+			{
+				requestConsoleInput();
+			}
+
+			if (program.keyPressed('D'))
+			{
+				rasterizer.toggleDebug();
+			}
+		}
+
 		gridRenderer.draw();
 		regionRenderer.draw();
-		equationLabel.draw();
+		equationTextEdit.draw();
 		rangeLabel.draw();
+		
 	}
 }
 
@@ -105,18 +129,18 @@ void Controller::stopConsoleInput()
 	consoleInputThread.join();
 }
 
-void Controller::processConsoleInput()
+void Controller::processEquationInput(const std::string &inputString)
 {
-	plot.setStatement(StatementParser().parse(consoleInputString));
+	plot.setStatement(StatementParser().parse(inputString));
 	consoleInputDataReady = false;
 	if (!plot.empty())
 	{
 		rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
-		equationLabel.setText(plot.getStatement().getString());
+		equationTextEdit.setText(plot.getStatement().getString());
 	}
 	else
 	{
-		equationLabel.setText("Invalid equation");
+		equationTextEdit.setText("Invalid equation");
 	}
 }
 
@@ -138,7 +162,7 @@ void Controller::onWindowSizeChange(int width, int height)
 			rasterizer.requestRasterize(plot, width, height);
 		}
 	}
-	equationLabel.update(width, height);
+	equationTextEdit.update(width, height);
 	rangeLabel.update(width, height);
 }
 
@@ -150,9 +174,13 @@ void Controller::processRasterizerData()
 
 void Controller::onMouseClicked()
 {
-	if (equationLabel.isClicked(program.getMouseX(), program.getMouseY()))
+	if (!isTypingEquation)
 	{
-		std::cout << "equationLabel clicked!" << std::endl;
+		if (equationTextEdit.within(program.getMouseX(), program.getMouseY()))
+		{
+			equationTextEdit.clickCallback();
+			isTypingEquation = true;
+		}
 	}
 }
 

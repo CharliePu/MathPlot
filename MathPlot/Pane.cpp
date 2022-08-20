@@ -7,7 +7,7 @@ void Pane::clickCallback()
 {
 }
 
-bool Pane::isClicked(double mouseX, double mouseY)
+bool Pane::within(double x, double y)
 {
     return false;
 }
