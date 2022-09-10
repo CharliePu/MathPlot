@@ -5,11 +5,22 @@
 
 #include "StatementParser.h"
 
-Controller::Controller(Program& program): program(program), equationTextEdit(-0.95, -0.95, "Click here and type an inequality"),
-											rangeLabel(-0.95, 0.9, "x: [-10, 10]; y: [-10, 10]"),
-                                          consoleInputRequested(false), isTypingEquation(false)
+Controller::Controller(const std::shared_ptr<Program> &program): 
+	program(program), 
+	equationTextEdit(std::make_shared<TextEdit>(-0.95, -0.95, "Click here and type an inequality")),
+	rangeLabel(std::make_shared<Label>(- 0.95, 0.9, "x: [-10, 10]; y: [-10, 10]")),
+	labelController(std::make_shared<LabelController>()),
+	textEditController(std::make_shared<TextEditController>()),
+	labelRenderer(std::make_shared<LabelRenderer>()),
+	textEditRenderer(std::make_shared<TextEditRenderer>()),
+    consoleInputRequested(false), isTypingEquation(false)
 {
-	program.setOnWindowSizeChange([&](const int width, const int height) { onWindowSizeChange(width, height); });
+	program->setOnWindowSizeChange([&](const int width, const int height) { onWindowSizeChange(width, height); });
+
+
+
+	textEditRenderer->addTextEdit(equationTextEdit);
+	labelRenderer->addLabel(rangeLabel);
 
 	startConsoleInput();
 }
@@ -21,7 +32,7 @@ Controller::~Controller()
 
 void Controller::start()
 {
-	while (!program.shouldClose())
+	while (!program->shouldClose())
 	{
 		if (rasterizer.isDataReady())
 		{
@@ -33,49 +44,49 @@ void Controller::start()
 			processEquationInput(consoleInputString);
 		}
 
-		if (program.mouseDragged())
+		if (program->mouseDragged())
 		{
 			onMouseDragged();
 		}
 
-		if (program.mouseClicked())
+		if (program->mouseClicked())
 		{
 			onMouseClicked();
 		}
 
-		if (program.mouseScrolled())
+		if (program->mouseScrolled())
 		{
 			onMouseScrolled();
 		}
 
 		if (isTypingEquation)
 		{
-			if (program.hasTextInput())
+			if (program->hasTextInput())
 			{
-				equationTextEdit.typeCallback(program.getTextInput());
+				textEditController->typeCallback(equationTextEdit, program->getTextInput());
 			}
 
 			// Special handling for removing characters
-			if (program.backSpacePressed())
+			if (program->backSpacePressed())
 			{
-				equationTextEdit.typeCallback('\b');
+				textEditController->typeCallback(equationTextEdit, '\b');
 			}
 
-			if (program.enterPressed() || program.escapePressed())
+			if (program->enterPressed() || program->escapePressed())
 			{
-				equationTextEdit.typeUnfocusCallback();
+				textEditController->typeUnfocusCallback(equationTextEdit);
 				isTypingEquation = false;
-				processEquationInput(equationTextEdit.getText());
+				processEquationInput(equationTextEdit->getText());
 			}
 		}
 		else
 		{
-			if (program.keyPressed('I'))
+			if (program->keyPressed('I'))
 			{
 				requestConsoleInput();
 			}
 
-			if (program.keyPressed('D'))
+			if (program->keyPressed('D'))
 			{
 				rasterizer.toggleDebug();
 			}
@@ -83,8 +94,8 @@ void Controller::start()
 
 		gridRenderer.draw();
 		regionRenderer.draw();
-		equationTextEdit.draw();
-		rangeLabel.draw();
+		textEditRenderer->draw();
+		labelRenderer->draw();
 		
 	}
 }
@@ -135,12 +146,13 @@ void Controller::processEquationInput(const std::string &inputString)
 	consoleInputDataReady = false;
 	if (!plot.empty())
 	{
-		rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
-		equationTextEdit.setText(plot.getStatement().getString());
+		rasterizer.requestRasterize(plot, program->getWidth(), program->getHeight());
+		equationTextEdit->setText(plot.getStatement().getString());
 	}
 	else
 	{
-		equationTextEdit.setText("Invalid equation");
+		equationTextEdit->setText("Invalid equation");
+		equationTextEdit->notifySubscribers();
 	}
 }
 
@@ -162,8 +174,9 @@ void Controller::onWindowSizeChange(int width, int height)
 			rasterizer.requestRasterize(plot, width, height);
 		}
 	}
-	equationTextEdit.update(width, height);
-	rangeLabel.update(width, height);
+
+	textEditRenderer->update();
+	labelRenderer->update();
 }
 
 void Controller::processRasterizerData()
@@ -176,9 +189,9 @@ void Controller::onMouseClicked()
 {
 	if (!isTypingEquation)
 	{
-		if (equationTextEdit.within(program.getMouseX(), program.getMouseY()))
+		if (textEditRenderer->within(program->getMouseX(), program->getMouseY()) == equationTextEdit)
 		{
-			equationTextEdit.clickCallback();
+			textEditController->clickCallback(equationTextEdit);
 			isTypingEquation = true;
 		}
 	}
@@ -192,32 +205,32 @@ void Controller::onMouseDragged()
 	};
 	
 	plot.move(
-		scaleByNumericRange(program.getMouseDeltaX(), -1, 1, plot.getXMin(), plot.getXMax()),
-		scaleByNumericRange(program.getMouseDeltaY(), -1, 1, plot.getYMin(), plot.getYMax()));
+		scaleByNumericRange(program->getMouseDeltaX(), -1, 1, plot.getXMin(), plot.getXMax()),
+		scaleByNumericRange(program->getMouseDeltaY(), -1, 1, plot.getYMin(), plot.getYMax()));
 
-	regionRenderer.move(program.getMouseDeltaX(), program.getMouseDeltaY());
+	regionRenderer.move(program->getMouseDeltaX(), program->getMouseDeltaY());
 
-	rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
+	rasterizer.requestRasterize(plot, program->getWidth(), program->getHeight());
 
 	gridRenderer.updatePlot(plot);
 
-	rangeLabel.setText(std::format("x: [{:.2f}, {:.2f}]; y: [{:.2f}, {:.2f}]", plot.getXMin(), plot.getXMax(), plot.getYMin(), plot.getYMax()));
+	rangeLabel->setText(std::format("x: [{:.2f}, {:.2f}]; y: [{:.2f}, {:.2f}]", plot.getXMin(), plot.getXMax(), plot.getYMin(), plot.getYMax()));
 }
 
 void Controller::onMouseScrolled()
 {
 
-	const double x = program.getMouseX();
-	const double y = program.getMouseY();
-	const double scale = pow(1.1, program.getMouseScroll());
+	const double x = program->getMouseX();
+	const double y = program->getMouseY();
+	const double scale = pow(1.1, program->getMouseScroll());
 
 	plot.zoom(x, y, scale);
 
 	regionRenderer.zoom(x, y, scale);
 
-	rasterizer.requestRasterize(plot, program.getWidth(), program.getHeight());
+	rasterizer.requestRasterize(plot, program->getWidth(), program->getHeight());
 
 	gridRenderer.updatePlot(plot);
 
-	rangeLabel.setText(std::format("x: [{:.2f}, {:.2f}]; y: [{:.2f}, {:.2f}]", plot.getXMin(), plot.getXMax(), plot.getYMin(), plot.getYMax()));
+	rangeLabel->setText(std::format("x: [{:.2f}, {:.2f}]; y: [{:.2f}, {:.2f}]", plot.getXMin(), plot.getXMax(), plot.getYMin(), plot.getYMax()));
 }

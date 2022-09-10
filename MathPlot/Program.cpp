@@ -45,9 +45,9 @@ void characterCallback(GLFWwindow* window, unsigned int codepoint)
     textInputQueue.push(static_cast<char>(codepoint));
 }
 
-Program& getProgram()
+std::shared_ptr<Program> getProgram()
 {
-    static Program program{};
+    static auto program = std::make_shared<Program>();
     return program;
 }
 

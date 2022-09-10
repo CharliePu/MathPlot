@@ -1,39 +1,64 @@
 #include "TextEdit.h"
 
 
-TextEdit::TextEdit(double x, double y, const std::string& defaultText): Label(x, y, defaultText), isEditing(false), defaultText(defaultText)
+TextEdit::TextEdit(double x, double y, const std::string& defaultText): 
+	label(std::make_shared<Label>(x, y, defaultText)), 
+	editState(false), 
+	defaultText(defaultText)
 {
 }
 
-void TextEdit::clickCallback()
+void TextEdit::setText(const std::string& text)
 {
-	isEditing = true;
-	setText("");
+	label->setText(text);
 }
 
-void TextEdit::typeCallback(char c)
+std::string TextEdit::getText()
 {
-	if (isEditing) {
-		if (c == '\b')
-		{
-			std::string s{ getText() };
-			if (!s.empty())
-				s.pop_back();
-			setText(s);
-		}
-		else
-		{
-			setText(getText() + c);
-		}
-	}
+	return label->getText();
 }
 
-void TextEdit::typeUnfocusCallback()
+void TextEdit::setPosition(double x, double y)
 {
-	isEditing = false;
+	label->setPosition(x, y);
+}
 
-	if (getText().empty())
-	{
-		setText(defaultText);
-	}
+double TextEdit::getX()
+{
+	return label->getX();
+}
+
+double TextEdit::getY()
+{
+	return label->getY();
+}
+
+void TextEdit::setEditState(bool state)
+{
+	editState = state;
+}
+
+bool TextEdit::getEditState()
+{
+	return editState;
+}
+
+void TextEdit::setDefaultText(const std::string& text)
+{
+	defaultText = text;
+}
+
+std::string TextEdit::getDefaultText()
+{
+	return defaultText;
+}
+
+std::shared_ptr<Label> TextEdit::getLabel()
+{
+	return label;
+}
+
+void TextEdit::setLabel(const std::shared_ptr<Label>& label)
+{
+	this->label = label;
 }

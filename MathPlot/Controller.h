@@ -5,11 +5,15 @@
 #include "Rasterizer.h"
 #include "RegionRenderer.h"
 #include "TextEdit.h"
+#include "LabelController.h"
+#include "LabelRenderer.h"
+#include "TextEditController.h"
+#include "TextEditRenderer.h"
 
 class Controller
 {
 public:
-	explicit Controller(Program &program);
+	explicit Controller(const std::shared_ptr<Program> &program);
 	~Controller();
 
 	Controller(const Controller& controller) = delete;
@@ -34,16 +38,22 @@ private:
 	void onMouseDragged();
 	void onMouseScrolled();
 
-	Program &program;
+	std::shared_ptr<Program> program;
 
 	Rasterizer rasterizer;
 	RegionRenderer regionRenderer;
 
 	GridRenderer gridRenderer;
 
-	Label rangeLabel;
-	TextEdit equationTextEdit;
-	
+	std::shared_ptr<Label> rangeLabel;
+	std::shared_ptr <LabelController> labelController;
+	std::shared_ptr <LabelRenderer> labelRenderer;
+
+	std::shared_ptr<TextEdit> equationTextEdit;
+	std::shared_ptr <TextEditController> textEditController;
+	std::shared_ptr <TextEditRenderer> textEditRenderer;
+
+
 	Plot plot;
 
 	std::thread consoleInputThread;

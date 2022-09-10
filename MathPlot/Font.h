@@ -19,6 +19,8 @@ class Font
 public:
 	Font(const FT_Face &face);
 
+	void loadGlyphInfo(const unsigned int& characterSize, const FT_Face& face);
+
 	std::vector<unsigned char> getBitmap();
 	[[nodiscard]] unsigned int getBitmapWidth() const;
 	[[nodiscard]] unsigned int getBitmapHeight() const;

@@ -10,6 +10,11 @@ Font::Font(const FT_Face& face)
 {
 	constexpr unsigned int characterSize = 128;
 
+	loadGlyphInfo(characterSize, face);
+}
+
+void Font::loadGlyphInfo(const unsigned int& characterSize, const FT_Face& face)
+{
 	const unsigned int charsPerRow = std::ceil(std::sqrt(characterSize));
 	width = (1 + face->size->metrics.height / 64) * charsPerRow;
 	width = std::bit_ceil(width); // Round up to nearest power of 2
@@ -46,7 +51,7 @@ Font::Font(const FT_Face& face)
 		glyphInfos[c].width = face->glyph->bitmap.width;
 		glyphInfos[c].height = face->glyph->bitmap.rows;
 
-		glyphInfos[c].x0 = penX  / static_cast<double>(width);
+		glyphInfos[c].x0 = penX / static_cast<double>(width);
 		glyphInfos[c].y0 = penY / static_cast<double>(height);
 
 

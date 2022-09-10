@@ -48,4 +48,4 @@ private:
 	GLFWwindow* window;
 };
 
-Program& getProgram();
+std::shared_ptr<Program> getProgram();

@@ -3,9 +3,7 @@
 
 int main()
 {
-    Program program(getProgram());
-
-    Controller controller(program);
+    Controller controller(getProgram());
 
     controller.start();
 
