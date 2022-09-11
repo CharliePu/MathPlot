@@ -3,6 +3,8 @@
 
 #include <stdexcept>
 
+#include <glm/ext/matrix_transform.hpp>
+
 Plot::Plot() : statement(), xmin(-10.0), xmax(10.0), ymin(-10.0), ymax(10.0), ratio(1.0)
 {
 
@@ -50,6 +52,28 @@ void Plot::setAspectRatio(double ratio)
 {
 	this->ratio = ratio;
 	setTargetXRange(xmin, xmax);
+}
+
+glm::mat4 Plot::getTransformMatrix() const
+{
+	auto scaleMatrix = glm::scale(
+		glm::mat4(1.0),
+		glm::vec3(
+			2.0 / (xmax - xmin),
+			2.0 / (ymax - ymin),
+			1.0
+		));
+
+	auto translateMatrix = glm::translate(
+		glm::mat4(1.0),
+		glm::vec3(
+			-(xmax + xmin) / 2.0,
+			-(ymax + ymin) / 2.0,
+			0.0
+		)
+	);
+
+	return scaleMatrix * translateMatrix;
 }
 
 bool Plot::empty() const

@@ -2,6 +2,7 @@
 #include <optional>
 
 #include "Statement.h"
+#include <glm/matrix.hpp>
 
 class Plot
 {
@@ -14,6 +15,8 @@ public:
 	void setTargetXRange(double xMin, double xMax);
 	void setTargetYRange(double yMin, double yMax);
 	void setAspectRatio(double ratio);
+
+	glm::mat4 getTransformMatrix() const;
 
 	[[nodiscard]] bool empty() const;
 

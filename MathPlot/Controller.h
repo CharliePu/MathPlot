@@ -55,7 +55,7 @@ private:
 
 
 	Plot plot;
-
+	
 	std::thread consoleInputThread;
 	std::atomic<bool> consoleInputThreadShouldClose, consoleInputDataReady;
 	bool consoleInputRequested;

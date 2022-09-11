@@ -215,6 +215,7 @@ void Controller::onMouseDragged()
 	gridRenderer.updatePlot(plot);
 
 	rangeLabel->setText(std::format("x: [{:.2f}, {:.2f}]; y: [{:.2f}, {:.2f}]", plot.getXMin(), plot.getXMax(), plot.getYMin(), plot.getYMax()));
+	rangeLabel->notifySubscribers();
 }
 
 void Controller::onMouseScrolled()
@@ -233,4 +234,5 @@ void Controller::onMouseScrolled()
 	gridRenderer.updatePlot(plot);
 
 	rangeLabel->setText(std::format("x: [{:.2f}, {:.2f}]; y: [{:.2f}, {:.2f}]", plot.getXMin(), plot.getXMax(), plot.getYMin(), plot.getYMax()));
+	rangeLabel->notifySubscribers();
 }

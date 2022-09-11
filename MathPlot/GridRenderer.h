@@ -11,9 +11,9 @@ public:
     GridRenderer();
 
 	void draw() override;
-    void updatePlot(const Plot& plot) const;
+    void updatePlot(const Plot& plot);
 private:
-    unsigned int vao, vbo;
+    unsigned int vao, vbo, transformLoc, scaleLoc, lineWidthLoc;
     Shader shader;
 };
 
