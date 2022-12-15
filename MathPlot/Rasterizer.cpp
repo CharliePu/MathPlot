@@ -162,12 +162,15 @@ void Rasterizer::rasterize()
                 pixels.push_back(255);
                 pixels.push_back(255);
                 pixels.push_back(255);
+                pixels.push_back(255);
             }
             else
             {
-                pixels.push_back(getPixel(x, y) * 255);
-                pixels.push_back(0);
-                pixels.push_back(0);
+                auto pixelBrightness = getPixel(x, y);
+                pixels.push_back(pixelBrightness * 0);
+                pixels.push_back(pixelBrightness * 41);
+                pixels.push_back(pixelBrightness * 189);
+                pixels.push_back(pixelBrightness * 153);
             }
         }
 
