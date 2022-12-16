@@ -1,6 +1,7 @@
 #include "GridRenderer.h"
 
 #include "Plot.h"
+#include "Program.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
@@ -32,8 +33,11 @@ GridRenderer::GridRenderer():
     scaleLoc = glGetUniformLocation(shader, "scale");
     glUniform1f(scaleLoc, 1.0f);
 
-    lineWidthLoc = glGetUniformLocation(shader, "lineWidth");
-    glUniform1f(lineWidthLoc, 0.02f);
+    lineWidthXLoc = glGetUniformLocation(shader, "lineWidthX");
+    glUniform1f(lineWidthXLoc, 0.02f);
+
+    lineWidthYLoc = glGetUniformLocation(shader, "lineWidthY");
+    glUniform1f(lineWidthYLoc, 0.02f);
 }
 
 void GridRenderer::draw()
@@ -52,7 +56,15 @@ void GridRenderer::updatePlot(const Plot& plot)
 
     double logScale = std::log10(std::max(plot.getWidth(), plot.getHeight()));
     glUniform1f(scaleLoc, static_cast<float>(logScale));
-    std::cout << std::log10(std::max(plot.getWidth(), plot.getHeight())) << std::endl;
 
-    glUniform1f(lineWidthLoc, std::min(plot.getWidth(), plot.getHeight()) / 1000);
+    double lineWidth = std::min(plot.getWidth(), plot.getHeight()) / 1000;
+
+    // Line needs to be as thick as the size of a pixel in minimum
+    double pixelWidth = getProgram()->getWidth();
+    double lineWidthX = std::max(lineWidth, plot.getWidth() / pixelWidth);
+    glUniform1f(lineWidthXLoc, lineWidthX);
+
+    double pixelHeight = getProgram()->getHeight();
+    double lineWidthY = std::max(lineWidth, plot.getHeight() / pixelHeight);
+    glUniform1f(lineWidthYLoc, lineWidthY);
 }

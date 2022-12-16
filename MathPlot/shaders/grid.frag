@@ -4,9 +4,10 @@ out vec4 FragColor;
 in vec2 coord;
 
 uniform float scale;
-uniform float lineWidth;
+uniform float lineWidthX;
+uniform float lineWidthY;
 
-float remainder(float x, float y)
+float distanceToFloor(float x, float y)
 {
     return x - y * floor(x / y);
 }
@@ -18,15 +19,15 @@ void main()
     float minorScale = pow(10.0f, floor(s));
     float majorScale = pow(10.0f, floor(s) + 1);
 
-    float lineWidth = pow(10.0f, s - 1.9);
+    //float lineWidth = pow(10.0f, s - 2.0);
 
-    bool minorLine = remainder(coord.x, minorScale) < lineWidth || remainder(coord.y, minorScale) < lineWidth;
+    bool minorLine = distanceToFloor(coord.x, minorScale) < lineWidthX || distanceToFloor(coord.y, minorScale) < lineWidthY;
 
-    bool majorLine = remainder(coord.x, majorScale) < lineWidth || remainder(coord.y, majorScale) < lineWidth;
+    bool majorLine = distanceToFloor(coord.x, majorScale) < lineWidthX || distanceToFloor(coord.y, majorScale) < lineWidthY;
 
     float gridline = float(minorLine) * (1.0f - fract(s)) + float(majorLine) * fract(s);
 
-    float axisLine = float(abs(coord.x) < lineWidth || abs(coord.y) < lineWidth);
+    float axisLine = float(abs(coord.x) < lineWidthX || abs(coord.y) < lineWidthY);
 
     FragColor = vec4(1.0f, 1.0, 1.0, gridline * 0.2 + axisLine * 0.8);
 }

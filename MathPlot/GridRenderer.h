@@ -13,7 +13,7 @@ public:
 	void draw() override;
     void updatePlot(const Plot& plot);
 private:
-    unsigned int vao, vbo, transformLoc, scaleLoc, lineWidthLoc;
+    unsigned int vao, vbo, transformLoc, scaleLoc, lineWidthXLoc, lineWidthYLoc;
     Shader shader;
 };
 

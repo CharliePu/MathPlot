@@ -177,6 +177,8 @@ void Controller::onWindowSizeChange(int width, int height)
 
 	textEditRenderer->update();
 	labelRenderer->update();
+
+	gridRenderer.updatePlot(plot);
 }
 
 void Controller::processRasterizerData()
